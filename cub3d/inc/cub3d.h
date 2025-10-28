@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef CUB3D_H
-# define FRACTOL_H
+# define CUB3D_H
 
 # define mapWidth 24
 # define mapHeight 24
@@ -26,9 +26,9 @@
 
 typedef struct s_raycaster
 {
-	int	bits_per_pixel;
-	int	line_length;
-	int	endian;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
 	double	start_posX;
 	double	start_posY;
 	double	dirX;
@@ -46,11 +46,16 @@ typedef struct s_raycaster
 	char	*img_data;
 }	t_raycaster;
 
+// Global world map
+extern int worldMap[mapWidth][mapHeight];
+
+// Raycaster
+int		raycasting_function(t_raycaster *raycaster);
+
 // Key binds
 void	prep_hooks(t_raycaster *raycaster);
-int	key_dispatcher(int keycode, t_raycaster *raycaster);
-int	handle_esc(int keycode, t_raycaster *raycaster);
-int	handle_close(t_raycaster *raycaster);
+int		key_dispatcher(int keycode, t_raycaster *raycaster);
+int		handle_close(t_raycaster *raycaster);
 
 // Utils
 void	init_raycaster(t_raycaster *raycaster);

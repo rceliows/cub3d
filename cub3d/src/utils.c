@@ -23,7 +23,16 @@ void	init_raycaster(t_raycaster *raycaster)
 	raycaster->img = mlx_new_image(raycaster->mlx, screenWidth, screenHeight);
 	if (!raycaster->img)
 		error_exit(raycaster);
-	raycaster->img_data = mlx_get_data_addr(raycaster->img, &raycaster->bits_per_pixel, &raycaster->line_length, &raycaster->endian);
+	raycaster->img_data = mlx_get_data_addr(raycaster->img, 
+		&raycaster->bits_per_pixel, &raycaster->line_length, &raycaster->endian);
+	raycaster->posX = 22.0;
+	raycaster->posY = 12.0;
+	raycaster->dirX = raycaster->start_posX;
+	raycaster->dirY = raycaster->start_posY;
+	raycaster->planeX = 0.0;
+	raycaster->planeY = 0.66;
+	raycaster->moveSpeed = 0.05;
+	raycaster->rotSpeed = 0.05;
 }
 
 void	cleanup_raycaster(t_raycaster *raycaster)
