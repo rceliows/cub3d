@@ -113,6 +113,28 @@ static void	apply_strafe_left(t_raycaster *r)
 		r->posY -= r->dirX * r->moveSpeed;
 }
 
+int	mouse_move(int x, int y, t_raycaster *raycaster)
+{
+	int		delta_x;
+	double	rotation;
+
+	(void)y;
+	if (!raycaster->mouse_init)
+	{
+		raycaster->mouse_x = x;
+		raycaster->mouse_init = 1;
+		return (0);
+	}
+	delta_x = x - raycaster->mouse_x;
+	raycaster->mouse_x = x;
+	if (delta_x != 0)
+	{
+		rotation = delta_x * 0.002;
+		apply_rotation(raycaster, rotation);
+	}
+	return (0);
+}
+
 void	process_movement(t_raycaster *raycaster)
 {
 	if (raycaster->keys.w)
@@ -134,4 +156,5 @@ void	prep_hooks(t_raycaster *raycaster)
 	mlx_hook(raycaster->win, 2, 1L << 0, key_press, raycaster);
 	mlx_hook(raycaster->win, 3, 1L << 1, key_release, raycaster);
 	mlx_hook(raycaster->win, 17, 1L << 17, handle_close, raycaster);
+	mlx_hook(raycaster->win, 6, 1L << 6, mouse_move, raycaster);
 }

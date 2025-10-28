@@ -40,6 +40,8 @@ void	init_raycaster(t_raycaster *raycaster)
 	raycaster->keys.d = 0;
 	raycaster->keys.left = 0;
 	raycaster->keys.right = 0;
+	raycaster->mouse_x = 0;
+	raycaster->mouse_init = 0;
 }
 
 void	cleanup_raycaster(t_raycaster *raycaster)

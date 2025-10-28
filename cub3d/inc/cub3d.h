@@ -15,8 +15,8 @@
 
 # define mapWidth 24
 # define mapHeight 24
-# define screenWidth 640
-# define screenHeight 480
+# define screenWidth 1280
+# define screenHeight 960
 
 # include "../minilibx-linux/mlx.h"
 # include <stdlib.h>
@@ -57,6 +57,8 @@ typedef struct s_raycaster
 	double	imag;
 	char	*img_data;
 	t_keys	keys;
+	int		mouse_x;
+	int		mouse_init;
 }	t_raycaster;
 
 // Global world map
@@ -71,6 +73,7 @@ int		key_press(int keycode, t_raycaster *raycaster);
 int		key_release(int keycode, t_raycaster *raycaster);
 int		handle_close(t_raycaster *raycaster);
 void	process_movement(t_raycaster *raycaster);
+int		mouse_move(int x, int y, t_raycaster *raycaster);
 
 // Utils
 void	init_raycaster(t_raycaster *raycaster);
