@@ -68,13 +68,16 @@ int	main(int argc, char **argv)
 {
 	t_raycaster	raycaster;
 	
-  if (argc != 2)
-    return (1);
-  setup_position(&raycaster, *argv[1]);
+	if (argc != 2)
+	{
+		printf("Insert input\n");
+		return (1);
+	}
+	setup_position(&raycaster, *argv[1]);
 	init_raycaster(&raycaster);
 	prep_hooks(&raycaster);
-  mlx_mouse_hide(raycaster.mlx, raycaster.win);
-  mlx_loop_hook(raycaster.mlx, raycasting_function, &raycaster);
+	mlx_mouse_hide(raycaster.mlx, raycaster.win);
+	mlx_loop_hook(raycaster.mlx, raycasting_function, &raycaster);
 	mlx_loop(raycaster.mlx);
 	cleanup_raycaster(&raycaster);
 	return (0);

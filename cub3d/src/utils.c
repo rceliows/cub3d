@@ -29,10 +29,17 @@ void	init_raycaster(t_raycaster *raycaster)
 	raycaster->posY = 12.0;
 	raycaster->dirX = raycaster->start_posX;
 	raycaster->dirY = raycaster->start_posY;
-	raycaster->planeX = 0.0;
-	raycaster->planeY = 0.66;
+	raycaster->planeX = -raycaster->start_posY * 0.66;
+	raycaster->planeY = raycaster->start_posX * 0.66;
 	raycaster->moveSpeed = 0.05;
 	raycaster->rotSpeed = 0.05;
+	raycaster->oldTime = 0;
+	raycaster->keys.w = 0;
+	raycaster->keys.a = 0;
+	raycaster->keys.s = 0;
+	raycaster->keys.d = 0;
+	raycaster->keys.left = 0;
+	raycaster->keys.right = 0;
 }
 
 void	cleanup_raycaster(t_raycaster *raycaster)

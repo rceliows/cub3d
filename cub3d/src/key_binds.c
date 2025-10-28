@@ -20,94 +20,20 @@ int	handle_close(t_raycaster *raycaster)
 	return (0);
 }
 
-void	handle_rotation_right(t_raycaster *raycaster)
+int	key_press(int keycode, t_raycaster *raycaster)
 {
-	double	oldDirX;
-	double	oldPlaneX;
-
-	oldDirX = raycaster->dirX;
-	raycaster->dirX = raycaster->dirX * cos(-raycaster->rotSpeed) 
-		- raycaster->dirY * sin(-raycaster->rotSpeed);
-	raycaster->dirY = oldDirX * sin(-raycaster->rotSpeed) 
-		+ raycaster->dirY * cos(-raycaster->rotSpeed);
-	oldPlaneX = raycaster->planeX;
-	raycaster->planeX = raycaster->planeX * cos(-raycaster->rotSpeed) 
-		- raycaster->planeY * sin(-raycaster->rotSpeed);
-	raycaster->planeY = oldPlaneX * sin(-raycaster->rotSpeed) 
-		+ raycaster->planeY * cos(-raycaster->rotSpeed);
-}
-
-void	handle_rotation_left(t_raycaster *raycaster)
-{
-	double	oldDirX;
-	double	oldPlaneX;
-
-	oldDirX = raycaster->dirX;
-	raycaster->dirX = raycaster->dirX * cos(raycaster->rotSpeed) 
-		- raycaster->dirY * sin(raycaster->rotSpeed);
-	raycaster->dirY = oldDirX * sin(raycaster->rotSpeed) 
-		+ raycaster->dirY * cos(raycaster->rotSpeed);
-	oldPlaneX = raycaster->planeX;
-	raycaster->planeX = raycaster->planeX * cos(raycaster->rotSpeed) 
-		- raycaster->planeY * sin(raycaster->rotSpeed);
-	raycaster->planeY = oldPlaneX * sin(raycaster->rotSpeed) 
-		+ raycaster->planeY * cos(raycaster->rotSpeed);
-}
-
-void	handle_movement_right(t_raycaster *raycaster)
-{
-	if (worldMap[(int)(raycaster->posX - raycaster->dirY * raycaster->moveSpeed)]
-		[(int)(raycaster->posY)] == 0)
-		raycaster->posX -= raycaster->dirY * raycaster->moveSpeed;
-	if (worldMap[(int)(raycaster->posX)]
-		[(int)(raycaster->posY + raycaster->dirX * raycaster->moveSpeed)] == 0)
-		raycaster->posY += raycaster->dirX * raycaster->moveSpeed;
-}
-
-void	handle_movement_left(t_raycaster *raycaster)
-{
-	if (worldMap[(int)(raycaster->posX + raycaster->dirY * raycaster->moveSpeed)]
-		[(int)(raycaster->posY)] == 0)
-		raycaster->posX += raycaster->dirY * raycaster->moveSpeed;
-	if (worldMap[(int)(raycaster->posX)]
-		[(int)(raycaster->posY - raycaster->dirX * raycaster->moveSpeed)] == 0)
-		raycaster->posY -= raycaster->dirX * raycaster->moveSpeed;
-}
-
-void	handle_movement_forward(t_raycaster *raycaster)
-{
-	if (worldMap[(int)(raycaster->posX + raycaster->dirX * raycaster->moveSpeed)]
-		[(int)(raycaster->posY)] == 0)
-		raycaster->posX += raycaster->dirX * raycaster->moveSpeed;
-	if (worldMap[(int)(raycaster->posX)]
-		[(int)(raycaster->posY + raycaster->dirY * raycaster->moveSpeed)] == 0)
-		raycaster->posY += raycaster->dirY * raycaster->moveSpeed;
-}
-
-void	handle_movement_backward(t_raycaster *raycaster)
-{
-	if (worldMap[(int)(raycaster->posX - raycaster->dirX * raycaster->moveSpeed)]
-		[(int)(raycaster->posY)] == 0)
-		raycaster->posX -= raycaster->dirX * raycaster->moveSpeed;
-	if (worldMap[(int)(raycaster->posX)]
-		[(int)(raycaster->posY - raycaster->dirY * raycaster->moveSpeed)] == 0)
-		raycaster->posY -= raycaster->dirY * raycaster->moveSpeed;
-}
-
-int	key_dispatcher(int keycode, t_raycaster *raycaster)
-{
-	if (keycode == 65363)
-		handle_rotation_right(raycaster);
-	else if (keycode == 65361)
-		handle_rotation_left(raycaster);
-	else if (keycode == 100)
-		handle_movement_right(raycaster);
+	if (keycode == 119)
+		raycaster->keys.w = 1;
 	else if (keycode == 97)
-		handle_movement_left(raycaster);
-	else if (keycode == 119)
-		handle_movement_forward(raycaster);
+		raycaster->keys.a = 1;
 	else if (keycode == 115)
-		handle_movement_backward(raycaster);
+		raycaster->keys.s = 1;
+	else if (keycode == 100)
+		raycaster->keys.d = 1;
+	else if (keycode == 65361)
+		raycaster->keys.left = 1;
+	else if (keycode == 65363)
+		raycaster->keys.right = 1;
 	else if (keycode == 65307)
 	{
 		printf("ESC pressed, exiting...\n");
@@ -117,8 +43,95 @@ int	key_dispatcher(int keycode, t_raycaster *raycaster)
 	return (0);
 }
 
+int	key_release(int keycode, t_raycaster *raycaster)
+{
+	if (keycode == 119)
+		raycaster->keys.w = 0;
+	else if (keycode == 97)
+		raycaster->keys.a = 0;
+	else if (keycode == 115)
+		raycaster->keys.s = 0;
+	else if (keycode == 100)
+		raycaster->keys.d = 0;
+	else if (keycode == 65361)
+		raycaster->keys.left = 0;
+	else if (keycode == 65363)
+		raycaster->keys.right = 0;
+	return (0);
+}
+
+static void	apply_rotation(t_raycaster *r, double angle)
+{
+	double	oldDirX;
+	double	oldPlaneX;
+
+	oldDirX = r->dirX;
+	r->dirX = r->dirX * cos(angle) - r->dirY * sin(angle);
+	r->dirY = oldDirX * sin(angle) + r->dirY * cos(angle);
+	oldPlaneX = r->planeX;
+	r->planeX = r->planeX * cos(angle) - r->planeY * sin(angle);
+	r->planeY = oldPlaneX * sin(angle) + r->planeY * cos(angle);
+}
+
+static void	apply_forward(t_raycaster *r)
+{
+	if (worldMap[(int)(r->posX + r->dirX * r->moveSpeed)]
+		[(int)(r->posY)] == 0)
+		r->posX += r->dirX * r->moveSpeed;
+	if (worldMap[(int)(r->posX)]
+		[(int)(r->posY + r->dirY * r->moveSpeed)] == 0)
+		r->posY += r->dirY * r->moveSpeed;
+}
+
+static void	apply_backward(t_raycaster *r)
+{
+	if (worldMap[(int)(r->posX - r->dirX * r->moveSpeed)]
+		[(int)(r->posY)] == 0)
+		r->posX -= r->dirX * r->moveSpeed;
+	if (worldMap[(int)(r->posX)]
+		[(int)(r->posY - r->dirY * r->moveSpeed)] == 0)
+		r->posY -= r->dirY * r->moveSpeed;
+}
+
+static void	apply_strafe_right(t_raycaster *r)
+{
+	if (worldMap[(int)(r->posX - r->dirY * r->moveSpeed)]
+		[(int)(r->posY)] == 0)
+		r->posX -= r->dirY * r->moveSpeed;
+	if (worldMap[(int)(r->posX)]
+		[(int)(r->posY + r->dirX * r->moveSpeed)] == 0)
+		r->posY += r->dirX * r->moveSpeed;
+}
+
+static void	apply_strafe_left(t_raycaster *r)
+{
+	if (worldMap[(int)(r->posX + r->dirY * r->moveSpeed)]
+		[(int)(r->posY)] == 0)
+		r->posX += r->dirY * r->moveSpeed;
+	if (worldMap[(int)(r->posX)]
+		[(int)(r->posY - r->dirX * r->moveSpeed)] == 0)
+		r->posY -= r->dirX * r->moveSpeed;
+}
+
+void	process_movement(t_raycaster *raycaster)
+{
+	if (raycaster->keys.w)
+		apply_forward(raycaster);
+	if (raycaster->keys.s)
+		apply_backward(raycaster);
+	if (raycaster->keys.a)
+		apply_strafe_left(raycaster);
+	if (raycaster->keys.d)
+		apply_strafe_right(raycaster);
+	if (raycaster->keys.right)
+		apply_rotation(raycaster, raycaster->rotSpeed);
+	if (raycaster->keys.left)
+		apply_rotation(raycaster, -raycaster->rotSpeed);
+}
+
 void	prep_hooks(t_raycaster *raycaster)
 {
-	mlx_hook(raycaster->win, 2, 1L << 0, key_dispatcher, raycaster);
+	mlx_hook(raycaster->win, 2, 1L << 0, key_press, raycaster);
+	mlx_hook(raycaster->win, 3, 1L << 1, key_release, raycaster);
 	mlx_hook(raycaster->win, 17, 1L << 17, handle_close, raycaster);
 }

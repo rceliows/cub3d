@@ -23,7 +23,17 @@
 # include <stdio.h>
 # include <sys/time.h>
 # include <math.h>
-#include <string.h>
+# include <string.h>
+
+typedef struct s_keys
+{
+	int	w;
+	int	a;
+	int	s;
+	int	d;
+	int	left;
+	int	right;
+}	t_keys;
 
 typedef struct s_raycaster
 {
@@ -46,6 +56,7 @@ typedef struct s_raycaster
 	void	*img;
 	double	imag;
 	char	*img_data;
+	t_keys	keys;
 }	t_raycaster;
 
 // Global world map
@@ -56,8 +67,10 @@ int		raycasting_function(t_raycaster *raycaster);
 
 // Key binds
 void	prep_hooks(t_raycaster *raycaster);
-int		key_dispatcher(int keycode, t_raycaster *raycaster);
+int		key_press(int keycode, t_raycaster *raycaster);
+int		key_release(int keycode, t_raycaster *raycaster);
 int		handle_close(t_raycaster *raycaster);
+void	process_movement(t_raycaster *raycaster);
 
 // Utils
 void	init_raycaster(t_raycaster *raycaster);
