@@ -23,12 +23,14 @@
 # include <stdio.h>
 # include <sys/time.h>
 # include <math.h>
+#include <string.h>
 
 typedef struct s_raycaster
 {
 	int		bits_per_pixel;
 	int		line_length;
 	int		endian;
+	int		oldTime;
 	double	start_posX;
 	double	start_posY;
 	double	dirX;

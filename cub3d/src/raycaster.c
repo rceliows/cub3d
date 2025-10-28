@@ -13,7 +13,10 @@
 #include "../inc/cub3d.h"
 
 #define RED   0xFF0000
+#define GREEN 0x00FF00
 #define BLUE  0x0000FF
+#define WHITE 0xFFFFFF
+#define YELLOW 0xFFFF00
 
 void	set_pixel(t_raycaster *raycaster, int x, int y, int color)
 {
@@ -29,8 +32,9 @@ void	set_pixel(t_raycaster *raycaster, int x, int y, int color)
 
 void	verLine(t_raycaster *raycaster, int x, int y_start, int y_end, int color)
 {
-	int i = y_start;
+	int i;
 
+	i = y_start;
 	while(i <= y_end)
 	{
 		set_pixel(raycaster, x, i, color);
@@ -38,34 +42,35 @@ void	verLine(t_raycaster *raycaster, int x, int y_start, int y_end, int color)
 	}
 }
 
+int	get_wall_color(int map_value, int side)
+{
+	int color;
+
+	if (map_value == 1)
+		color = RED;
+	else if (map_value == 2)
+		color = GREEN;
+	else if (map_value == 3)
+		color = BLUE;
+	else if (map_value == 4)
+		color = WHITE;
+	else
+		color = YELLOW;
+	if (side == 1)
+		color = color / 2;
+	return (color);
+}
+
 int	raycasting_function(t_raycaster *raycaster)
 {
-	// posX and posY start position (have to change it to the N/S/W/E one)
-	raycaster->posX = 22;
-	raycaster->posY = 12;
-
-	// dirX and dirY direction we looking at at the start position
-	double	dirX = raycaster->start_posX;
-	double	dirY = raycaster->start_posY;
-
-	// the camera plane
-	double	planeX = 0;
-	double	planeY = 0.66;
-
-	// Getting the time
 	struct timeval currentTV;
-	struct timeval previousTV;
-	double time = 0;					// Time of current frame
-	double oldTime = 0;					// Time of previous frame  
+	double time;
+	double frameTime;
+	double cameraX;
+	double rayDirX;
+	double rayDirY;
 
-	// Init for later
-	gettimeofday(&previousTV, NULL);
-
-	double	cameraX;					// x coordinate of the camera
-	double	rayDirX;
-	double	rayDirY;
-	
-	// Box of the map we are in
+    // Box of the map we are in
 	int mapX;
 	int mapY;
 
@@ -73,49 +78,46 @@ int	raycasting_function(t_raycaster *raycaster)
 	double sideDistX;
 	double sideDistY;
 
-	// Length of the ray to reach from one x/y cube to the next
+    // Length of the ray to reach from one x/y cube to the next
 	double deltaDistX;
 	double deltaDistY;
 
-	// Distance from the screen plane to the wall drawn perpendicularly to avoid fisheye
 	double perpWallDist;
-	
-	// Next cuadrant we'll step in either +1 or -1
+
+    // Next cuadrant we'll step in either +1 or -1
 	int stepX;
 	int stepY;
 
-	// Was a wall hit
-	int wall_hit = 0;
-	int side_hit;
-	
-	// Line calculation
+    // Wall hit detection
+	int hit;
+	int side;
+
+    // Wall line calculation
 	int lineHeight;
 	int drawStart;
 	int drawEnd;
 
 	int color;
+	int x;
 
-	// Time between frames calculation for modifiers 
-	double frameTime;
-
-	int x = 0;
+	memset(raycaster->img_data, 0, screenHeight * raycaster->line_length);
+	x = 0;
 	while(x < screenWidth)
 	{
 		cameraX = 2 * x / (double)screenWidth - 1;
-		rayDirX = dirX + planeX * cameraX;
-		rayDirY = dirY + planeY * cameraX;
+		rayDirX = raycaster->dirX + raycaster->planeX * cameraX;
+		rayDirY = raycaster->dirY + raycaster->planeY * cameraX;
 		mapX = (int)(raycaster->posX);
 		mapY = (int)(raycaster->posY);
 
-		// Step and inicitial sideDist calculation
 		if (rayDirX == 0)
 			deltaDistX = 1e30;
 		else
-			deltaDistX = fabs(1.0 / rayDirX);
+			deltaDistX = fabs(1 / rayDirX);
 		if (rayDirY == 0)
 			deltaDistY = 1e30;
 		else
-			deltaDistY = fabs(1.0 / rayDirY);
+			deltaDistY = fabs(1 / rayDirY);
 		if(rayDirX < 0)
 		{
 			stepX = -1;
@@ -137,33 +139,29 @@ int	raycasting_function(t_raycaster *raycaster)
 			sideDistY = (mapY + 1.0 - raycaster->posY) * deltaDistY;
 		}
 
-		// Perform DDA
-		wall_hit = 0;
-		while(wall_hit == 0)
+		hit = 0;
+		while(hit == 0)
 		{
-			// Move accross the cuadrands until a wall is find
 			if(sideDistX < sideDistY)
 			{
 				sideDistX += deltaDistX;
 				mapX += stepX;
-				side_hit = 0;
+				side = 0;
 			}
 			else
 			{
 				sideDistY += deltaDistY;
 				mapY += stepY;
-				side_hit = 1;
+				side = 1;
 			}
-			// Until we hit a wall and then we exit
 			if(worldMap[mapX][mapY] > 0)
-				wall_hit = 1;
+				hit = 1;
 		}
-		if(side_hit == 0)
+		if(side == 0)
 			perpWallDist = (sideDistX - deltaDistX);
 		else
 			perpWallDist = (sideDistY - deltaDistY);
 		
-		// Draw the line on the screen
 		lineHeight = (int)(screenHeight / perpWallDist);
 		drawStart = -lineHeight / 2 + screenHeight / 2;
 		if(drawStart < 0)
@@ -171,19 +169,16 @@ int	raycasting_function(t_raycaster *raycaster)
 		drawEnd = lineHeight / 2 + screenHeight / 2;
 		if(drawEnd >= screenHeight)
 			drawEnd = screenHeight - 1;
-		if (side_hit == 0)
-			color = RED;
-		else
-			color = BLUE;
+		color = get_wall_color(worldMap[mapX][mapY], side);
 		verLine(raycaster, x, drawStart, drawEnd, color);
 		x++;
 	}
 	gettimeofday(&currentTV, NULL);
-	oldTime = previousTV.tv_sec + previousTV.tv_usec * 1e-6;
 	time = currentTV.tv_sec + currentTV.tv_usec * 1e-6;
-	frameTime = (time - oldTime) / 1000.0;
-    raycaster->moveSpeed = frameTime * 5.0;
-    raycaster->rotSpeed = frameTime * 3.0;
+	frameTime = time - raycaster->oldTime;
+	raycaster->oldTime = time;
+	raycaster->moveSpeed = frameTime * 5.0;
+	raycaster->rotSpeed = frameTime * 3.0;
 	mlx_put_image_to_window(raycaster->mlx, raycaster->win, raycaster->img, 0, 0);
 	return (0);
 }
