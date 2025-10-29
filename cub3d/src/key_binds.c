@@ -115,22 +115,20 @@ static void	apply_strafe_left(t_raycaster *r)
 
 int	mouse_move(int x, int y, t_raycaster *raycaster)
 {
+	int		center_x;
+	int		center_y;
 	int		delta_x;
 	double	rotation;
 
+	center_x = screenWidth / 2;
+	center_y = screenHeight / 2;
 	(void)y;
-	if (!raycaster->mouse_init)
-	{
-		raycaster->mouse_x = x;
-		raycaster->mouse_init = 1;
-		return (0);
-	}
-	delta_x = x - raycaster->mouse_x;
-	raycaster->mouse_x = x;
+	delta_x = x - center_x;
 	if (delta_x != 0)
 	{
 		rotation = delta_x * 0.002;
 		apply_rotation(raycaster, rotation);
+		mlx_mouse_move(raycaster->mlx, raycaster->win, center_x, center_y);
 	}
 	return (0);
 }

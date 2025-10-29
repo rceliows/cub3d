@@ -138,7 +138,6 @@ int	raycasting_function(t_raycaster *raycaster)
 	int x;
 
 //	update_frame_timing(raycaster);
-	mlx_mouse_move(raycaster->mlx, raycaster->win, screenWidth / 2, screenHeight / 2);
 	process_movement(raycaster);
 	memset(raycaster->img_data, 0, screenHeight * raycaster->line_length);
 	draw_floor_ceiling(raycaster);

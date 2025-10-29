@@ -57,8 +57,6 @@ typedef struct s_raycaster
 	double	imag;
 	char	*img_data;
 	t_keys	keys;
-	int		mouse_x;
-	int		mouse_init;
 }	t_raycaster;
 
 // Global world map
