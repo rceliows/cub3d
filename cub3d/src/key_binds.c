@@ -120,8 +120,8 @@ int	mouse_move(int x, int y, t_raycaster *raycaster)
 	int		delta_x;
 	double	rotation;
 
-	center_x = screenWidth / 2;
-	center_y = screenHeight / 2;
+	center_x = raycaster->screenWidth / 2;
+	center_y = raycaster->screenHeight / 2;
 	(void)y;
 	delta_x = x - center_x;
 	if (delta_x != 0)

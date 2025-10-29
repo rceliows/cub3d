@@ -18,30 +18,6 @@
 #define WHITE 0xFFFFFF
 #define YELLOW 0xFFFF00
 
-void	set_pixel(t_raycaster *raycaster, int x, int y, int color)
-{
-	char	*pixel_ptr;
-
-	if (x >= 0 && x < screenWidth && y >= 0 && y < screenHeight)
-	{
-		pixel_ptr = raycaster->img_data
-			+ (y * raycaster->line_length + x * (raycaster->bits_per_pixel / 8));
-		*(unsigned int *)pixel_ptr = color;
-	}
-}
-
-void	verLine(t_raycaster *raycaster, int x, int y_start, int y_end, int color)
-{
-	int i;
-
-	i = y_start;
-	while(i <= y_end)
-	{
-		set_pixel(raycaster, x, i, color);
-		i++;
-	}
-}
-
 int	get_wall_color(int map_value, int side)
 {
 	int color;
@@ -61,48 +37,60 @@ int	get_wall_color(int map_value, int side)
 	return (color);
 }
 
-// static void	update_frame_timing(t_raycaster *raycaster)
-// {
-// 	struct timeval currentTV;
-// 	double time;
-// 	double frameTime;
-
-// 	gettimeofday(&currentTV, NULL);
-// 	time = currentTV.tv_sec + currentTV.tv_usec * 1e-6;
-// 	frameTime = (time - raycaster->oldTime) / 1000.0;
-// 	raycaster->oldTime = time;
-// 	raycaster->moveSpeed = frameTime * 5.0;
-// 	raycaster->rotSpeed = frameTime * 3.0;
-// }
-
-static void	draw_floor_ceiling(t_raycaster *raycaster)
+void	display_fps(t_raycaster *raycaster)
 {
-	int	x;
-	int	y;
-	int	half_height;
-
-	half_height = screenHeight / 2;
-	y = 0;
-	while (y < screenHeight)
+	static double	fps_timer = 0;
+	static int		frame_count = 0;
+	static double	current_fps = 0;
+	char			fps_str[50];
+	
+	fps_timer += raycaster->frameTime;
+	frame_count++;
+	if (fps_timer >= 1.0)
 	{
-		x = 0;
-		while (x < screenWidth)
-		{
-			if (y < half_height)
-				set_pixel(raycaster, x, y, 0x87CEEB);
-			else
-				set_pixel(raycaster, x, y, 0x404040);
-			x++;
-		}
+		current_fps = frame_count / fps_timer;
+		frame_count = 0;
+		fps_timer = 0;
+	}
+	sprintf(fps_str, "FPS: %.1f", current_fps);
+	mlx_string_put(raycaster->mlx, raycaster->win, 10, 20, 0xFFFFFF, fps_str);
+}
+
+static void	draw_column(t_raycaster *raycaster, int x, int drawStart, int drawEnd, int wallColor)
+{
+	char			*pixel_ptr;
+	int				pixel_size;
+	int				y;
+
+	pixel_size = raycaster->bits_per_pixel / 8;
+	pixel_ptr = raycaster->img_data + x * pixel_size;
+	y = 0;
+	while (y < drawStart)
+	{
+		*(unsigned int *)pixel_ptr = raycaster->ceiling_color;
+		pixel_ptr += raycaster->line_length;
+		y++;
+	}
+	while (y <= drawEnd)
+	{
+		*(unsigned int *)pixel_ptr = wallColor;
+		pixel_ptr += raycaster->line_length;
+		y++;
+	}
+	while (y < raycaster->screenHeight)
+	{
+		*(unsigned int *)pixel_ptr = raycaster->floor_color;
+		pixel_ptr += raycaster->line_length;
 		y++;
 	}
 }
 
+
 int	raycasting_function(t_raycaster *raycaster)
 {
-//	struct timeval currentTV;
-//	double time;
-//	double frameTime;
+	struct timeval	tv;
+	double			currentTime;
+
 	double cameraX;
 	double rayDirX;
 	double rayDirY;
@@ -137,14 +125,23 @@ int	raycasting_function(t_raycaster *raycaster)
 	int color;
 	int x;
 
-//	update_frame_timing(raycaster);
+	
+	// Update frame timing
+	gettimeofday(&tv, NULL);
+	currentTime = tv.tv_sec + tv.tv_usec / 1000000.0;
+	raycaster->frameTime = currentTime - raycaster->lastTime;
+	raycaster->lastTime = currentTime;
+	if (raycaster->frameTime > 0.1)
+		raycaster->frameTime = 0.1;
+	raycaster->moveSpeed = raycaster->baseMovespeed * raycaster->frameTime;
+	raycaster->rotSpeed = raycaster->baseRotSpeed * raycaster->frameTime;
 	process_movement(raycaster);
-	memset(raycaster->img_data, 0, screenHeight * raycaster->line_length);
-	draw_floor_ceiling(raycaster);
+//	memset(raycaster->img_data, 0, raycaster->screenHeight * raycaster->line_length);
+//	draw_floor_ceiling(raycaster);
 	x = 0;
-	while(x < screenWidth)
+	while(x < raycaster->screenWidth)
 	{
-		cameraX = 2 * x / (double)screenWidth - 1;
+		cameraX = 2 * x / (double)raycaster->screenWidth - 1;
 		rayDirX = raycaster->dirX + raycaster->planeX * cameraX;
 		rayDirY = raycaster->dirY + raycaster->planeY * cameraX;
 		mapX = (int)(raycaster->posX);
@@ -201,19 +198,19 @@ int	raycasting_function(t_raycaster *raycaster)
 			perpWallDist = (sideDistX - deltaDistX);
 		else
 			perpWallDist = (sideDistY - deltaDistY);
-		
-		lineHeight = (int)(screenHeight / perpWallDist);
-		drawStart = -lineHeight / 2 + screenHeight / 2;
+		lineHeight = (int)(raycaster->screenHeight / (1.5 * perpWallDist));
+		drawStart = -lineHeight / 2 + raycaster->screenHeight / 2;
 		if(drawStart < 0)
 			drawStart = 0;
-		drawEnd = lineHeight / 2 + screenHeight / 2;
-		if(drawEnd >= screenHeight)
-			drawEnd = screenHeight - 1;
+		drawEnd = lineHeight / 2 + raycaster->screenHeight / 2;
+		if(drawEnd >= raycaster->screenHeight)
+			drawEnd = raycaster->screenHeight - 1;
 		color = get_wall_color(worldMap[mapX][mapY], side);
-		verLine(raycaster, x, drawStart, drawEnd, color);
+		draw_column(raycaster, x, drawStart, drawEnd, color);
 		x++;
 	}
 	mlx_put_image_to_window(raycaster->mlx, raycaster->win, raycaster->img, 0, 0);
+	display_fps(raycaster);
 	return (0);
 }
 

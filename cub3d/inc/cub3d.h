@@ -15,8 +15,6 @@
 
 # define mapWidth 24
 # define mapHeight 24
-# define screenWidth 1280
-# define screenHeight 960
 
 # include "../minilibx-linux/mlx.h"
 # include <stdlib.h>
@@ -41,12 +39,21 @@ typedef struct s_raycaster
 	int		line_length;
 	int		endian;
 	int		oldTime;
+	int		screenWidth;
+	int		screenHeight;
+	unsigned int	ceiling_color;
+	unsigned int	floor_color;
 	double	start_posX;
 	double	start_posY;
 	double	dirX;
 	double	dirY;
 	double	planeX;
 	double	planeY;
+	double	frameTime;
+	double	lastTime;
+	double	screenScale;
+	double	baseMovespeed;
+	double	baseRotSpeed;
 	double	rotSpeed;
 	double	moveSpeed;
 	double	posX;

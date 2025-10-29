@@ -14,15 +14,16 @@
 
 void	init_raycaster(t_raycaster *raycaster)
 {
-	double	screen_scale;
+	struct timeval tv;
 	
 	raycaster->mlx = mlx_init();
 	if (!raycaster->mlx)
 		error_exit(raycaster);
-	raycaster->win = mlx_new_window(raycaster->mlx, screenWidth, screenHeight, "cub3d");
+	mlx_get_screen_size(raycaster->mlx, &raycaster->screenWidth, &raycaster->screenHeight);
+	raycaster->win = mlx_new_window(raycaster->mlx, raycaster->screenWidth, raycaster->screenHeight, "cub3d");
 	if (!raycaster->win)
 		error_exit(raycaster);
-	raycaster->img = mlx_new_image(raycaster->mlx, screenWidth, screenHeight);
+	raycaster->img = mlx_new_image(raycaster->mlx, raycaster->screenWidth, raycaster->screenHeight);
 	if (!raycaster->img)
 		error_exit(raycaster);
 	raycaster->img_data = mlx_get_data_addr(raycaster->img, 
@@ -33,9 +34,14 @@ void	init_raycaster(t_raycaster *raycaster)
 	raycaster->dirY = raycaster->start_posY;
 	raycaster->planeX = -raycaster->start_posY * 0.66;
 	raycaster->planeY = raycaster->start_posX * 0.66;
-	screen_scale = sqrt((screenWidth * screenHeight) / (1280.0 * 960.0));
-	raycaster->moveSpeed = 0.05 * screen_scale;
-	raycaster->rotSpeed = 0.03 * screen_scale;
+	raycaster->screenScale = sqrt((raycaster->screenWidth * raycaster->screenHeight) / (1920.0 * 1080.0));
+	raycaster->baseMovespeed = 1.0 * raycaster->screenScale;
+	raycaster->baseRotSpeed = 0.3 * raycaster->screenScale;
+	gettimeofday(&tv, NULL);
+	raycaster->lastTime = tv.tv_sec + tv.tv_usec / 1000000.0;
+	raycaster->frameTime = 0.016;
+	raycaster->moveSpeed = raycaster->baseMovespeed * raycaster->frameTime;
+	raycaster->rotSpeed = raycaster->baseRotSpeed * raycaster->frameTime;
 	raycaster->oldTime = 0;
 	raycaster->keys.w = 0;
 	raycaster->keys.a = 0;
@@ -43,6 +49,8 @@ void	init_raycaster(t_raycaster *raycaster)
 	raycaster->keys.d = 0;
 	raycaster->keys.left = 0;
 	raycaster->keys.right = 0;
+	raycaster->ceiling_color = 0x87CEEB;
+	raycaster->floor_color = 0x404040;
 }
 
 void	cleanup_raycaster(t_raycaster *raycaster)
