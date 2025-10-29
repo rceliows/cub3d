@@ -12,6 +12,8 @@
 
 #include "../inc/cub3d.h"
 
+ADD MOVE AND ROT SPEED PROPORTIONAL TO THE SCREEN SIZE
+
 void	init_raycaster(t_raycaster *raycaster)
 {
 	raycaster->mlx = mlx_init();
@@ -31,8 +33,8 @@ void	init_raycaster(t_raycaster *raycaster)
 	raycaster->dirY = raycaster->start_posY;
 	raycaster->planeX = -raycaster->start_posY * 0.66;
 	raycaster->planeY = raycaster->start_posX * 0.66;
-	raycaster->moveSpeed = 0.05;
-	raycaster->rotSpeed = 0.05;
+	raycaster->moveSpeed = 0.01;
+	raycaster->rotSpeed = 0.01;
 	raycaster->oldTime = 0;
 	raycaster->keys.w = 0;
 	raycaster->keys.a = 0;

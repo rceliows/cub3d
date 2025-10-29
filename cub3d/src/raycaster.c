@@ -61,19 +61,19 @@ int	get_wall_color(int map_value, int side)
 	return (color);
 }
 
-static void	update_frame_timing(t_raycaster *raycaster)
-{
-	struct timeval currentTV;
-	double time;
-	double frameTime;
+// static void	update_frame_timing(t_raycaster *raycaster)
+// {
+// 	struct timeval currentTV;
+// 	double time;
+// 	double frameTime;
 
-	gettimeofday(&currentTV, NULL);
-	time = currentTV.tv_sec + currentTV.tv_usec * 1e-6;
-	frameTime = (time - raycaster->oldTime) / 1000.0;
-	raycaster->oldTime = time;
-	raycaster->moveSpeed = frameTime * 5.0;
-	raycaster->rotSpeed = frameTime * 3.0;
-}
+// 	gettimeofday(&currentTV, NULL);
+// 	time = currentTV.tv_sec + currentTV.tv_usec * 1e-6;
+// 	frameTime = (time - raycaster->oldTime) / 1000.0;
+// 	raycaster->oldTime = time;
+// 	raycaster->moveSpeed = frameTime * 5.0;
+// 	raycaster->rotSpeed = frameTime * 3.0;
+// }
 
 static void	draw_floor_ceiling(t_raycaster *raycaster)
 {
@@ -137,7 +137,8 @@ int	raycasting_function(t_raycaster *raycaster)
 	int color;
 	int x;
 
-	update_frame_timing(raycaster);
+//	update_frame_timing(raycaster);
+	mlx_mouse_move(raycaster->mlx, raycaster->win, screenWidth / 2, screenHeight / 2);
 	process_movement(raycaster);
 	memset(raycaster->img_data, 0, screenHeight * raycaster->line_length);
 	draw_floor_ceiling(raycaster);
