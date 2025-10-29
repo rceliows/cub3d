@@ -19,7 +19,9 @@ void	init_raycaster(t_raycaster *raycaster)
 	raycaster->mlx = mlx_init();
 	if (!raycaster->mlx)
 		error_exit(raycaster);
-	mlx_get_screen_size(raycaster->mlx, &raycaster->screenWidth, &raycaster->screenHeight);
+//	mlx_get_screen_size(raycaster->mlx, &raycaster->screenWidth, &raycaster->screenHeight);
+	raycaster->screenWidth = 1920;
+	raycaster->screenHeight = 1080;
 	raycaster->win = mlx_new_window(raycaster->mlx, raycaster->screenWidth, raycaster->screenHeight, "cub3d");
 	if (!raycaster->win)
 		error_exit(raycaster);

@@ -18,22 +18,18 @@
 #define WHITE 0xFFFFFF
 #define YELLOW 0xFFFF00
 
-int	get_wall_color(int map_value, int side)
+int	get_wall_color(int direction)
 {
 	int color;
 
-	if (map_value == 1)
+	if (direction == 1)
 		color = RED;
-	else if (map_value == 2)
+	if (direction == 2)
 		color = GREEN;
-	else if (map_value == 3)
+	if (direction == 3)
 		color = BLUE;
-	else if (map_value == 4)
+	if (direction == 4)
 		color = WHITE;
-	else
-		color = YELLOW;
-	if (side == 1)
-		color = color / 2;
 	return (color);
 }
 
@@ -116,6 +112,7 @@ int	raycasting_function(t_raycaster *raycaster)
     // Wall hit detection
 	int hit;
 	int side;
+	int	direction;
 
     // Wall line calculation
 	int lineHeight;
@@ -136,8 +133,6 @@ int	raycasting_function(t_raycaster *raycaster)
 	raycaster->moveSpeed = raycaster->baseMovespeed * raycaster->frameTime;
 	raycaster->rotSpeed = raycaster->baseRotSpeed * raycaster->frameTime;
 	process_movement(raycaster);
-//	memset(raycaster->img_data, 0, raycaster->screenHeight * raycaster->line_length);
-//	draw_floor_ceiling(raycaster);
 	x = 0;
 	while(x < raycaster->screenWidth)
 	{
@@ -198,14 +193,28 @@ int	raycasting_function(t_raycaster *raycaster)
 			perpWallDist = (sideDistX - deltaDistX);
 		else
 			perpWallDist = (sideDistY - deltaDistY);
-		lineHeight = (int)(raycaster->screenHeight / (1.5 * perpWallDist));
+		if (side == 0) // vertical wall
+		{
+			if (stepX == -1)
+				direction = 3;
+			else
+				direction = 4;
+		} 
+		else // horizontal wall
+		{
+    		if (stepY == -1)
+        		direction = 1;
+    		else
+        		direction = 2;
+		}
+		lineHeight = (int)(raycaster->screenHeight / perpWallDist);
 		drawStart = -lineHeight / 2 + raycaster->screenHeight / 2;
 		if(drawStart < 0)
 			drawStart = 0;
 		drawEnd = lineHeight / 2 + raycaster->screenHeight / 2;
 		if(drawEnd >= raycaster->screenHeight)
 			drawEnd = raycaster->screenHeight - 1;
-		color = get_wall_color(worldMap[mapX][mapY], side);
+		color = get_wall_color(direction);
 		draw_column(raycaster, x, drawStart, drawEnd, color);
 		x++;
 	}
