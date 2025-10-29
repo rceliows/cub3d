@@ -16,12 +16,23 @@
 # define mapWidth 24
 # define mapHeight 24
 
+# ifndef defaultScreenWidth
+#  define defaultScreenWidth 1920
+# endif
+
+# ifndef defaultScreenHeight
+#  define defaultScreenHeight 1080
+# endif
+
 # include "../minilibx-linux/mlx.h"
 # include <stdlib.h>
 # include <stdio.h>
 # include <sys/time.h>
 # include <math.h>
 # include <string.h>
+
+/* Forward declaration of structures */
+typedef struct s_pipex			t_pipex;
 
 typedef struct s_keys
 {
@@ -33,6 +44,28 @@ typedef struct s_keys
 	int	right;
 }	t_keys;
 
+typedef struct s_window
+{
+	void	*mlx;
+	void	*win;
+	void	*img;
+//	double	imag;
+}	t_window;
+
+typedef struct s_map
+{
+	int	worldMap[mapWidth][mapHeight];
+	int	NorthTexture;
+	int	SouthTexture;
+	int	EastTexture;
+	int	WestTexture;;
+	int	CeilingColor;
+	int FloorColor;
+	double	start_positionX;
+	double	start_positionY;
+	int	start_direction;
+}	t_map;
+
 typedef struct s_raycaster
 {
 	int		bits_per_pixel;
@@ -43,8 +76,6 @@ typedef struct s_raycaster
 	int		screenHeight;
 	unsigned int	ceiling_color;
 	unsigned int	floor_color;
-	double	start_posX;
-	double	start_posY;
 	double	dirX;
 	double	dirY;
 	double	planeX;
@@ -58,31 +89,75 @@ typedef struct s_raycaster
 	double	moveSpeed;
 	double	posX;
 	double	posY;
-	void	*mlx;
-	void	*win;
-	void	*img;
-	double	imag;
 	char	*img_data;
 	t_keys	keys;
 }	t_raycaster;
 
-// Global world map
-extern int worldMap[mapWidth][mapHeight];
+typedef struct s_raycaster_var
+{
+	// Timing
+	struct timeval	tv;
+	double			currentTime;
+	
+	// Ray calculation
+	double			cameraX;
+	double			rayDirX;
+	double			rayDirY;
+	
+	// Map position
+	int				mapX;
+	int				mapY;
+	
+	// Distance calculation
+	double			sideDistX;
+	double			sideDistY;
+	double			deltaDistX;
+	double			deltaDistY;
+	double			perpWallDist;
+	
+	// Step direction
+	int				stepX;
+	int				stepY;
+	
+	// Wall detection
+	int				side;
+	
+	// Drawing
+	int				lineHeight;
+	int				drawStart;
+	int				drawEnd;
+}	t_raycaster_var;
 
-// Raycaster
-int		raycasting_function(t_raycaster *raycaster);
+typedef struct s_cub3d
+{
+	t_keys	keys;
+	t_window	window;
+	t_map	map;
+	t_raycaster	raycaster;
+	
+}	t_cub3d;
 
-// Key binds
-void	prep_hooks(t_raycaster *raycaster);
-int		key_press(int keycode, t_raycaster *raycaster);
+/* Raycaster */
+int		raycasting_function(t_raycaster *raycaster, t_window *window, t_map *map);
+
+/* Key binds */
+void	prep_hooks(t_raycaster *raycaster, t_window *window);
+int		key_press(int keycode, t_raycaster *raycaster, t_cub3d *cub3d);
 int		key_release(int keycode, t_raycaster *raycaster);
-int		handle_close(t_raycaster *raycaster);
-void	process_movement(t_raycaster *raycaster);
-int		mouse_move(int x, int y, t_raycaster *raycaster);
+int		handle_close(t_cub3d *cub3d);
+void	process_movement(t_raycaster *raycaster, t_map *map);
+int		mouse_move(int x, int y, t_raycaster *raycaster, t_window *window);
 
-// Utils
-void	init_raycaster(t_raycaster *raycaster);
-void	cleanup_raycaster(t_raycaster *raycaster);
-void	error_exit(t_raycaster *raycaster);
+/* Inits and cleanups */
+void    init_keys(t_keys *keys);
+void    init_map(t_map *map);
+int		init_window(t_window *window, t_raycaster *raycaster);
+void	init_raycaster(t_raycaster *raycaster, t_window *window, int direction);
+void	cleanup_window(t_window *window);
+// void	cleanup_raycaster(t_raycaster *raycaster);
+void	cleanup_cub3d(t_cub3d *cub3d);
+
+/* Utils */
+void	error_exit(t_cub3d *raycaster);
 
 #endif

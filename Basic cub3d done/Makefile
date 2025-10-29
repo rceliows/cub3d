@@ -16,19 +16,13 @@ AR			= ar rcs
 LIBS			= $(MINILIBX) -lX11 -lXext -lm
 
 # Source Files
-CUB3D			= $(SRC_DIR)main.c			\
-			$(SRC_DIR)utils.c			\
-
-INIT			= $(SRC_DIR)init/init_keys.c		\
-			$(SRC_DIR)init/init_map.c		\
-			$(SRC_DIR)init/init_raycaster.c		\
-			$(SRC_DIR)init/init_window.c		\
-			$(SRC_DIR)init/key_binds.c		\
-
-RAYCASTER		=$(SRC_DIR)raycaster/raycaster.c	\
+CUB3D		=	$(SRC_DIR)main.c		\
+			$(SRC_DIR)raycaster.c		\
+			$(SRC_DIR)key_binds.c		\
+			$(SRC_DIR)utils.c		\
 
 # Concatenate all source files
-SRCS 			= $(CUB3D) $(INIT) $(RAYCASTER) 
+SRCS 			= $(CUB3D)
 
 # Apply the pattern substitution to each source file in SRC and produce a corresponding list of object files in the OBJ_DIR
 OBJ 			= $(patsubst $(SRC_DIR)%.c,$(OBJ_DIR)%.o,$(SRCS))
