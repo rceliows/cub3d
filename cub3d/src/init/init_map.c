@@ -12,10 +12,15 @@
 
 #include "../inc/cub3d.h"
 
-void    init_map(t_map *map)
+t_map	*init_map(void)
 {
-    int templateMap[mapWidth][mapHeight]=
-    {
+	t_map	*m;
+	
+	m = malloc(sizeof(t_map));
+	if (!m)
+		return (NULL);
+	int	templateMap[mapWidth][mapHeight]=
+	{
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -40,21 +45,22 @@ void    init_map(t_map *map)
 	{1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-    };
+	};
 	for (int i = 0; i < mapWidth; i++)
 	{
-    	for (int j = 0; j < mapHeight; j++)
-        	map->worldMap[i][j] = templateMap[i][j];
+		for (int j = 0; j < mapHeight; j++)
+			m->worldMap[i][j] = templateMap[i][j];
 	}
-	map->NorthTexture = 0xFF0000;
-    map->SouthTexture = 0x00FF00;
-    map->EastTexture = 0x0000FF;
-    map->WestTexture = 0xFFFFFF;
-    map->CeilingColor = 0x87CEEB;
-    map->FloorColor = 0x404040;
-    map->start_positionX = 22.0;
-    map->start_positionY = 12.0;
-    map->start_direction = 0;
+	m->NorthTexture = 0xFF0000;
+	m->SouthTexture = 0x00FF00;
+	m->EastTexture = 0x0000FF;
+	m->WestTexture = 0xFFFFFF;
+	m->CeilingColor = 0x87CEEB;
+	m->FloorColor = 0x404040;
+	m->start_positionX = 22.0;
+	m->start_positionY = 12.0;
+	m->start_direction = 0;
+	return(m);
 }
 
-// void    cleanup_map(t_map *map)
+// void    cleanup_map(t_map *m)

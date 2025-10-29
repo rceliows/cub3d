@@ -14,7 +14,7 @@
 
 void	cleanup_cub3d(t_cub3d *cub3d)
 {
-	cleanup_window(&cub3d->window);
+	cleanup_window(cub3d->window);
 //	cleanup_map(cub3d->map);
 }
 

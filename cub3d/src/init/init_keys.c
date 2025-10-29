@@ -12,12 +12,18 @@
 
 #include "../inc/cub3d.h"
 
-void    init_keys(t_keys *keys)
+t_keys	*init_keys(void)
 {
-    keys->w = 0;
-	keys->a = 0;
-	keys->s = 0;
-	keys->d = 0;
-	keys->left = 0;
-	keys->right = 0;
+	t_keys	*k;
+
+	k = malloc(sizeof(t_keys));
+	if (!k)
+		return (NULL);
+	k->w = 0;
+	k->a = 0;
+	k->s = 0;
+	k->d = 0;
+	k->left = 0;
+	k->right = 0;
+	return(k);
 }

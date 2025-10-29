@@ -12,40 +12,44 @@
 
 #include "../inc/cub3d.h"
 
-int    init_window(t_window *window, t_raycaster *raycaster)
+t_window	*init_window(void)
 {
-    window->mlx = mlx_init();
-	if (!window->mlx)
-		return(1);
-//	mlx_get_screen_size(raycaster->mlx, &raycaster->screenWidth, &raycaster->screenHeight);
-	raycaster->screenWidth = defaultScreenWidth;
-	raycaster->screenHeight = defaultScreenHeight;
-	window->win = mlx_new_window(window->mlx, raycaster->screenWidth, raycaster->screenHeight, "cub3d");
-	if (!window->win)
-		return(1);
-	window->img = mlx_new_image(window->mlx, raycaster->screenWidth, raycaster->screenHeight);
-	if (!window->img)
-		return(1);
-    return(0);
+	t_window *w;
+	
+	w = malloc(sizeof(t_window));
+	if (!w)
+		return (NULL);
+	w->mlx = mlx_init();
+	if (!w->mlx)
+		return (NULL);
+//	mlx_get_screen_size(r->mlx, &r->screenWidth, &r->screenHeight);
+	w->win = mlx_new_window(w->mlx, defScreenWidth, defScreenHeight, "cub3d");
+	if (!w->win)
+		return (NULL);
+	w->img = mlx_new_image(w->mlx, defScreenWidth, defScreenHeight);
+	if (!w->img)
+		return (NULL);
+	w->center_x = defScreenWidth / 2;
+	w->center_y = defScreenHeight / 2;
+	return (w);
 }
 
-
-void	cleanup_window(t_window *window)
+void	cleanup_window(t_window *w)
 {
-	if (window->img)
+	if (w->img)
 	{
-		mlx_destroy_image(window->mlx, window->img);
-		window->img = NULL;
+		mlx_destroy_image(w->mlx, w->img);
+		w->img = NULL;
 	}
-	if (window->win)
+	if (w->win)
 	{
-		mlx_destroy_window(window->mlx, window->win);
-		window->win = NULL;
+		mlx_destroy_window(w->mlx, w->win);
+		w->win = NULL;
 	}
-	if (window->mlx)
+	if (w->mlx)
 	{
-		mlx_destroy_display(window->mlx);
-		free(window->mlx);
-		window->mlx = NULL;
+		mlx_destroy_display(w->mlx);
+		free(w->mlx);
+		w->mlx = NULL;
 	}
 }

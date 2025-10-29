@@ -16,12 +16,12 @@
 # define mapWidth 24
 # define mapHeight 24
 
-# ifndef defaultScreenWidth
-#  define defaultScreenWidth 1920
+# ifndef defScreenWidth
+#  define defScreenWidth 1920
 # endif
 
-# ifndef defaultScreenHeight
-#  define defaultScreenHeight 1080
+# ifndef defScreenHeight
+#  define defScreenHeight 1080
 # endif
 
 # include "../minilibx-linux/mlx.h"
@@ -50,6 +50,8 @@ typedef struct s_window
 	void	*win;
 	void	*img;
 //	double	imag;
+	int		center_x;
+	int		center_y;
 }	t_window;
 
 typedef struct s_map
@@ -72,8 +74,6 @@ typedef struct s_raycaster
 	int		line_length;
 	int		endian;
 	int		oldTime;
-	int		screenWidth;
-	int		screenHeight;
 	unsigned int	ceiling_color;
 	unsigned int	floor_color;
 	double	dirX;
@@ -96,7 +96,6 @@ typedef struct s_raycaster
 typedef struct s_raycaster_var
 {
 	// Timing
-	struct timeval	tv;
 	double			currentTime;
 	
 	// Ray calculation
@@ -130,15 +129,15 @@ typedef struct s_raycaster_var
 
 typedef struct s_cub3d
 {
-	t_keys	keys;
-	t_window	window;
-	t_map	map;
-	t_raycaster	raycaster;
-	
+	t_keys	*keys;
+	t_window	*window;
+	t_map	*map;
+	t_raycaster	*raycaster;
+	t_raycaster_var *var;
 }	t_cub3d;
 
 /* Raycaster */
-int		raycasting_function(t_raycaster *raycaster, t_window *window, t_map *map);
+int		raycasting_function(t_raycaster *raycaster, t_window *window, t_map *map, t_raycaster_var *var);
 
 /* Key binds */
 void	prep_hooks(t_raycaster *raycaster, t_window *window);
@@ -149,10 +148,11 @@ void	process_movement(t_raycaster *raycaster, t_map *map);
 int		mouse_move(int x, int y, t_raycaster *raycaster, t_window *window);
 
 /* Inits and cleanups */
-void    init_keys(t_keys *keys);
-void    init_map(t_map *map);
-int		init_window(t_window *window, t_raycaster *raycaster);
-void	init_raycaster(t_raycaster *raycaster, t_window *window, int direction);
+t_keys	*init_keys(void);
+t_map	*init_map(void);
+t_window	*init_window(void);
+t_raycaster	*init_raycaster(t_window *w, int direction);
+t_raycaster_var	*init_raycaster_var(void);
 void	cleanup_window(t_window *window);
 // void	cleanup_raycaster(t_raycaster *raycaster);
 void	cleanup_cub3d(t_cub3d *cub3d);

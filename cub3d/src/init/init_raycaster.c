@@ -12,48 +12,81 @@
 
 #include "../inc/cub3d.h"
 
-void	setup_direction(t_raycaster *raycaster, int direction)
+void	setup_direction(t_raycaster *r, int direction)
 {
 	if (direction == 'N')
 	{
-		raycaster->dirX = 0;
-		raycaster->dirY = -1;
+		r->dirX = 0;
+		r->dirY = -1;
 	}
 	else if (direction == 'S')
 	{
-		raycaster->dirX = 0;
-		raycaster->dirY = 1;
+		r->dirX = 0;
+		r->dirY = 1;
 	}
 	else if (direction == 'E')
 	{
-		raycaster->dirX = 1;
-		raycaster->dirY = 0;
+		r->dirX = 1;
+		r->dirY = 0;
 	}
 	else if (direction == 'W')
 	{
-		raycaster->dirX = -1;
-		raycaster->dirY = 0;
+		r->dirX = -1;
+		r->dirY = 0;
 	}
 }
 
-void	init_raycaster(t_raycaster *raycaster, t_window *window, int direction)
+t_raycaster	*init_raycaster(t_window *w, int direction)
 {
-	struct timeval tv;
+	t_raycaster *r;
+	struct timeval	tv;
 
-	raycaster->img_data = mlx_get_data_addr(window->img, 
-		&raycaster->bits_per_pixel, &raycaster->line_length, &raycaster->endian);
-	raycaster->posX = 22.0;
-	raycaster->posY = 12.0;
-	setup_direction(raycaster, direction);
-	raycaster->planeX = -raycaster->dirY * 0.66;
-	raycaster->planeY = raycaster->dirX * 0.66;
-	raycaster->screenScale = sqrt((raycaster->screenWidth * raycaster->screenHeight) / (1920.0 * 1080.0));
-	raycaster->baseMovespeed = 1.0 * raycaster->screenScale;
-	raycaster->baseRotSpeed = 0.3 * raycaster->screenScale;
+	r = malloc(sizeof(t_raycaster));
+	if (!r)
+		return (NULL);
+	r->img_data = mlx_get_data_addr(w->img,
+			&r->bits_per_pixel, &r->line_length, &r->endian);
+	r->posX = 22.0;
+	r->posY = 12.0;
+	setup_direction(r, direction);
+	r->planeX = -r->dirY * 0.66;
+	r->planeY = r->dirX * 0.66;
+	r->screenScale = sqrt((defScreenWidth
+				* defScreenHeight) / (1920.0 * 1080.0));
+	r->baseMovespeed = 1.0 * r->screenScale;
+	r->baseRotSpeed = 0.3 * r->screenScale;
 	gettimeofday(&tv, NULL);
-	raycaster->lastTime = tv.tv_sec + tv.tv_usec / 1000000.0;
-	raycaster->frameTime = 0.016;
-	raycaster->moveSpeed = raycaster->baseMovespeed * raycaster->frameTime;
-	raycaster->rotSpeed = raycaster->baseRotSpeed * raycaster->frameTime;
-	raycaster->oldTime = 0;
+	r->lastTime = tv.tv_sec + tv.tv_usec / 1000000.0;
+	r->frameTime = 0.016;
+	r->moveSpeed = r->baseMovespeed * r->frameTime;
+	r->rotSpeed = r->baseRotSpeed * r->frameTime;
+	r->oldTime = 0;
+	return (r);
+}
+
+t_raycaster_var	*init_raycaster_var(void)
+{
+	t_raycaster_var	*v;
+
+	v = malloc(sizeof(t_raycaster_var));
+	if (!v)
+		return (NULL);
+	v->currentTime = 0.0;
+	v->cameraX = 0.0;
+	v->rayDirX = 0.0;
+	v->rayDirY = 0.0;
+	v->mapX = 0;
+	v->mapY = 0;
+	v->sideDistX = 0.0;
+	v->sideDistY = 0.0;
+	v->deltaDistX = 0.0;
+	v->deltaDistY = 0.0;
+	v->perpWallDist = 0.0;
+	v->stepX = 0;
+	v->stepY = 0;
+	v->side = 0;
+	v->lineHeight = 0;
+	v->drawStart = 0;
+	v->drawEnd = 0;
+	return(v);
 }
