@@ -19,7 +19,7 @@ t_map	*init_map(void)
 	m = malloc(sizeof(t_map));
 	if (!m)
 		return (NULL);
-	int	templateMap[mapWidth][mapHeight]=
+	int	templatemap[MAPWIDTH][MAPHEIGHT]=
 	{
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -46,19 +46,19 @@ t_map	*init_map(void)
 	{1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 	};
-	for (int i = 0; i < mapWidth; i++)
+	for (int i = 0; i < MAPWIDTH; i++)
 	{
-		for (int j = 0; j < mapHeight; j++)
-			m->worldMap[i][j] = templateMap[i][j];
+		for (int j = 0; j < MAPHEIGHT; j++)
+			m->world_map[i][j] = templatemap[i][j];
 	}
-	m->NorthTexture = 0xFF0000;
-	m->SouthTexture = 0x00FF00;
-	m->EastTexture = 0x0000FF;
-	m->WestTexture = 0xFFFFFF;
-	m->CeilingColor = 0x87CEEB;
-	m->FloorColor = 0x404040;
-	m->start_positionX = 22.0;
-	m->start_positionY = 12.0;
+	m->north_texture = 0xFF0000;
+	m->south_texture = 0x00FF00;
+	m->east_texture = 0x0000FF;
+	m->west_texture = 0xFFFFFF;
+	m->ceiling_color = 0x87CEEB;
+	m->floor_color = 0x404040;
+	m->start_position_x = 22.0;
+	m->start_position_y = 12.0;
 	m->start_direction = 0;
 	return(m);
 }

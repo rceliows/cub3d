@@ -20,8 +20,11 @@ int	handle_close(t_cub3d *cub3d)
 	return (0);
 }
 
-int	key_press(int keycode, t_raycaster *r, t_cub3d *cub3d)
+int	key_press(int keycode, t_cub3d *cub3d)
 {
+	t_raycaster	*r;
+
+	r = cub3d->raycaster;
 	if (keycode == 119)
 		r->keys.w = 1;
 	else if (keycode == 97)
@@ -43,8 +46,11 @@ int	key_press(int keycode, t_raycaster *r, t_cub3d *cub3d)
 	return (0);
 }
 
-int	key_release(int keycode, t_raycaster *r)
+int	key_release(int keycode, t_cub3d *cub3d)
 {
+	t_raycaster	*r;
+
+	r = cub3d->raycaster;
 	if (keycode == 119)
 		r->keys.w = 0;
 	else if (keycode == 97)
@@ -62,63 +68,67 @@ int	key_release(int keycode, t_raycaster *r)
 
 static void	apply_rotation(t_raycaster *r, double angle)
 {
-	double	olddirx;
-	double	oldplanex;
+	double	olddir_x;
+	double	oldplane_x;
 
-	olddirx = r->dirX;
-	r->dirX = r->dirX * cos(angle) - r->dirY * sin(angle);
-	r->dirY = olddirx * sin(angle) + r->dirY * cos(angle);
-	oldplanex = r->planeX;
-	r->planeX = r->planeX * cos(angle) - r->planeY * sin(angle);
-	r->planeY = oldplanex * sin(angle) + r->planeY * cos(angle);
+	olddir_x = r->dir_x;
+	r->dir_x = r->dir_x * cos(angle) - r->dir_y * sin(angle);
+	r->dir_y = olddir_x * sin(angle) + r->dir_y * cos(angle);
+	oldplane_x = r->plane_x;
+	r->plane_x = r->plane_x * cos(angle) - r->plane_y * sin(angle);
+	r->plane_y = oldplane_x * sin(angle) + r->plane_y * cos(angle);
 }
 
 static void	apply_forward(t_raycaster *r, t_map *map)
 {
-	if (map->worldMap[(int)(r->posX + r->dirX * r->moveSpeed)]
-		[(int)(r->posY)] == 0)
-		r->posX += r->dirX * r->moveSpeed;
-	if (map->worldMap[(int)(r->posX)]
-		[(int)(r->posY + r->dirY * r->moveSpeed)] == 0)
-		r->posY += r->dirY * r->moveSpeed;
+	if (map->world_map[(int)(r->pos_x + r->dir_x * r->move_speed)]
+		[(int)(r->pos_y)] == 0)
+		r->pos_x += r->dir_x * r->move_speed;
+	if (map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y + r->dir_y * r->move_speed)] == 0)
+		r->pos_y += r->dir_y * r->move_speed;
 }
 
 static void	apply_backward(t_raycaster *r, t_map *map)
 {
-	if (map->worldMap[(int)(r->posX - r->dirX * r->moveSpeed)]
-		[(int)(r->posY)] == 0)
-		r->posX -= r->dirX * r->moveSpeed;
-	if (map->worldMap[(int)(r->posX)]
-		[(int)(r->posY - r->dirY * r->moveSpeed)] == 0)
-		r->posY -= r->dirY * r->moveSpeed;
+	if (map->world_map[(int)(r->pos_x - r->dir_x * r->move_speed)]
+		[(int)(r->pos_y)] == 0)
+		r->pos_x -= r->dir_x * r->move_speed;
+	if (map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y - r->dir_y * r->move_speed)] == 0)
+		r->pos_y -= r->dir_y * r->move_speed;
 }
 
 static void	apply_strafe_right(t_raycaster *r, t_map *map)
 {
-	if (map->worldMap[(int)(r->posX - r->dirY * r->moveSpeed)]
-		[(int)(r->posY)] == 0)
-		r->posX -= r->dirY * r->moveSpeed;
-	if (map->worldMap[(int)(r->posX)]
-		[(int)(r->posY + r->dirX * r->moveSpeed)] == 0)
-		r->posY += r->dirX * r->moveSpeed;
+	if (map->world_map[(int)(r->pos_x - r->dir_y * r->move_speed)]
+		[(int)(r->pos_y)] == 0)
+		r->pos_x -= r->dir_y * r->move_speed;
+	if (map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y + r->dir_x * r->move_speed)] == 0)
+		r->pos_y += r->dir_x * r->move_speed;
 }
 
 static void	apply_strafe_left(t_raycaster *r, t_map *map)
 {
-	if (map->worldMap[(int)(r->posX + r->dirY * r->moveSpeed)]
-		[(int)(r->posY)] == 0)
-		r->posX += r->dirY * r->moveSpeed;
-	if (map->worldMap[(int)(r->posX)]
-		[(int)(r->posY - r->dirX * r->moveSpeed)] == 0)
-		r->posY -= r->dirX * r->moveSpeed;
+	if (map->world_map[(int)(r->pos_x + r->dir_y * r->move_speed)]
+		[(int)(r->pos_y)] == 0)
+		r->pos_x += r->dir_y * r->move_speed;
+	if (map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y - r->dir_x * r->move_speed)] == 0)
+		r->pos_y -= r->dir_x * r->move_speed;
 }
 
-int	mouse_move(int x, int y, t_raycaster *r, t_window *w)
+int	mouse_move(int x, int y, t_cub3d *cub3d)
 {
-	int		delta_x;
-	double	rotation;
+	int			delta_x;
+	double		rotation;
+	t_raycaster	*r;
+	t_window	*w;
 
 	(void)y;
+	r = cub3d->raycaster;
+	w = cub3d->window;
 	delta_x = x - w->center_x;
 	if (delta_x != 0)
 	{
@@ -140,15 +150,15 @@ void	process_movement(t_raycaster *r, t_map *map)
 	if (r->keys.d)
 		apply_strafe_right(r, map);
 	if (r->keys.right)
-		apply_rotation(r, r->rotSpeed);
+		apply_rotation(r, r->rot_speed);
 	if (r->keys.left)
-		apply_rotation(r, -r->rotSpeed);
+		apply_rotation(r, -r->rot_speed);
 }
 
-void	prep_hooks(t_raycaster *r, t_window *w)
+void	prep_hooks(t_cub3d *cub3d)
 {
-	mlx_hook(w->win, 2, 1L << 0, key_press, r);
-	mlx_hook(w->win, 3, 1L << 1, key_release, r);
-	mlx_hook(w->win, 17, 1L << 17, handle_close, r);
-	mlx_hook(w->win, 6, 1L << 6, mouse_move, r);
+	mlx_hook(cub3d->window->win, 2, 1L << 0, key_press, cub3d);
+	mlx_hook(cub3d->window->win, 3, 1L << 1, key_release, cub3d);
+	mlx_hook(cub3d->window->win, 17, 1L << 17, handle_close, cub3d);
+	mlx_hook(cub3d->window->win, 6, 1L << 6, mouse_move, cub3d);
 }

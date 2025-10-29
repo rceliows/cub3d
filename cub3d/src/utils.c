@@ -14,12 +14,35 @@
 
 void	cleanup_cub3d(t_cub3d *cub3d)
 {
-	cleanup_window(cub3d->window);
-//	cleanup_map(cub3d->map);
+	if (!cub3d)
+		return ;
+	if (cub3d->window)
+	{
+		cleanup_window(cub3d->window);
+		free(cub3d->window);
+		cub3d->window = NULL;
+	}
+	if (cub3d->raycaster)
+	{
+		free(cub3d->raycaster);
+		cub3d->raycaster = NULL;
+	}
+	if (cub3d->map)
+	{
+		free(cub3d->map);
+		cub3d->map = NULL;
+	}
+	if (cub3d->keys)
+	{
+		free(cub3d->keys);
+		cub3d->keys = NULL;
+	}
+	free(cub3d);
 }
 
 void	error_exit(t_cub3d *cub3d)
 {
+	printf("Error: Initialization failed\n");
 	cleanup_cub3d(cub3d);
 	exit(1);
 }

@@ -14,6 +14,10 @@
 
 static void	init_cub3d(t_cub3d *cub3d, int direction)
 {
+	cub3d->keys = NULL;
+	cub3d->map = NULL;
+	cub3d->window = NULL;
+	cub3d->raycaster = NULL;
 	cub3d->keys = init_keys();
 	if (!cub3d->keys)
 		error_exit(cub3d);
@@ -23,7 +27,7 @@ static void	init_cub3d(t_cub3d *cub3d, int direction)
 	cub3d->window = init_window();
 	if (!cub3d->window)
 		error_exit(cub3d);
-	cub3d->raycaster = init_raycaster(cub3d->window, direction);
+	cub3d->raycaster = init_raycaster(cub3d->window, cub3d->map, direction);
 	if (!cub3d->raycaster)
 		error_exit(cub3d);
 }
@@ -34,19 +38,17 @@ int	main(int argc, char **argv)
 
 	if (argc != 2)
 	{
-		printf("Insert input\n");
+		printf("Usage: %s <direction: N/S/E/W>\n", argv[0]);
 		return (1);
 	}
 	cub3d = malloc(sizeof(t_cub3d));
-	if(!cub3d)
-		return(1);
+	if (!cub3d)
+		return (1);
 	init_cub3d(cub3d, *argv[1]);
-	prep_hooks(cub3d->raycaster, cub3d->window);
+	prep_hooks(cub3d);
 	mlx_mouse_hide(cub3d->window->mlx, cub3d->window->win);
-//	mlx_loop_hook(cub3d->window.mlx, raycasting_function, cub3d->raycaster);
 	mlx_loop_hook(cub3d->window->mlx, raycasting_function, cub3d);
 	mlx_loop(cub3d->window->mlx);
 	cleanup_cub3d(cub3d);
-	free(cub3d);
 	return (0);
 }

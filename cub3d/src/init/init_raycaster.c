@@ -16,29 +16,29 @@ void	setup_direction(t_raycaster *r, int direction)
 {
 	if (direction == 'N')
 	{
-		r->dirX = 0;
-		r->dirY = -1;
+		r->dir_x = 0;
+		r->dir_y = -1;
 	}
 	else if (direction == 'S')
 	{
-		r->dirX = 0;
-		r->dirY = 1;
+		r->dir_x = 0;
+		r->dir_y = 1;
 	}
 	else if (direction == 'E')
 	{
-		r->dirX = 1;
-		r->dirY = 0;
+		r->dir_x = 1;
+		r->dir_y = 0;
 	}
 	else if (direction == 'W')
 	{
-		r->dirX = -1;
-		r->dirY = 0;
+		r->dir_x = -1;
+		r->dir_y = 0;
 	}
 }
 
-t_raycaster	*init_raycaster(t_window *w, int direction)
+t_raycaster	*init_raycaster(t_window *w, t_map *map, int direction)
 {
-	t_raycaster *r;
+	t_raycaster		*r;
 	struct timeval	tv;
 
 	r = malloc(sizeof(t_raycaster));
@@ -46,22 +46,21 @@ t_raycaster	*init_raycaster(t_window *w, int direction)
 		return (NULL);
 	r->img_data = mlx_get_data_addr(w->img,
 			&r->bits_per_pixel, &r->line_length, &r->endian);
-	r->posX = 22.0;
-	r->posY = 12.0;
+	r->pos_x = map->start_position_x;
+	r->pos_y = map->start_position_y;
 	setup_direction(r, direction);
-	r->planeX = -r->dirY * 0.66;
-	r->planeY = r->dirX * 0.66;
-	r->screenScale = sqrt((defScreenWidth
-				* defScreenHeight) / (1920.0 * 1080.0));
-	r->baseMovespeed = 1.0 * r->screenScale;
-	r->baseRotSpeed = 0.3 * r->screenScale;
+	r->plane_x = -r->dir_y * 0.66;
+	r->plane_y = r->dir_x * 0.66;
+	r->ceiling_color = map->ceiling_color;
+	r->floor_color = map->floor_color;
+	r->screen_scale = sqrt((DEFSCREENWIDTH
+				* DEFSCREENHEIGHT) / (1920.0 * 1080.0));
+	r->base_move_speed = 1.0 * r->screen_scale;
+	r->base_rot_speed = 0.3 * r->screen_scale;
 	gettimeofday(&tv, NULL);
-	r->lastTime = tv.tv_sec + tv.tv_usec / 1000000.0;
-	r->frameTime = 0.016;
-	r->moveSpeed = r->baseMovespeed * r->frameTime;
-	r->rotSpeed = r->baseRotSpeed * r->frameTime;
-	r->oldTime = 0;
-	r->currentTime = 0.0;
+	r->last_time = tv.tv_sec + tv.tv_usec / 1000000.0;
+	r->frame_time = 0.016;
+	r->move_speed = r->base_move_speed * r->frame_time;
+	r->rot_speed = r->base_rot_speed * r->frame_time;
 	return (r);
 }
-

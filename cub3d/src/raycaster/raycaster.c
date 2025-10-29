@@ -42,7 +42,7 @@ void	display_fps(t_raycaster *r, t_window *w)
 	static double	current_fps = 0;
 	char			fps_str[50];
 
-	fps_timer += r->frameTime;
+	fps_timer += r->frame_time;
 	frame_count++;
 	if (fps_timer >= 1.0)
 	{
@@ -64,19 +64,19 @@ static void	draw_column(t_raycaster *r, int x,
 	pixel_size = r->bits_per_pixel / 8;
 	pixel_ptr = r->img_data + x * pixel_size;
 	y = 0;
-	while (y < v->drawStart)
+	while (y < v->draw_start)
 	{
 		*(unsigned int *)pixel_ptr = r->ceiling_color;
 		pixel_ptr += r->line_length;
 		y++;
 	}
-	while (y <= v->drawEnd)
+	while (y <= v->draw_end)
 	{
 		*(unsigned int *)pixel_ptr = wallColor;
 		pixel_ptr += r->line_length;
 		y++;
 	}
-	while (y < defScreenHeight)
+	while (y < DEFSCREENHEIGHT)
 	{
 		*(unsigned int *)pixel_ptr = r->floor_color;
 		pixel_ptr += r->line_length;
@@ -87,15 +87,15 @@ static void	draw_column(t_raycaster *r, int x,
 static void	update_time_and_speed(t_raycaster *r)
 {
 	struct timeval	tv;
-	
+
 	gettimeofday(&tv, NULL);
-	r->currentTime = tv.tv_sec + tv.tv_usec / 1000000.0;
-	r->frameTime = r->currentTime - r->lastTime;
-	r->lastTime = r->currentTime;
-	if (r->frameTime > 0.1)
-		r->frameTime = 0.1;
-	r->moveSpeed = r->baseMovespeed * r->frameTime;
-	r->rotSpeed = r->baseRotSpeed * r->frameTime;
+	r->current_time = tv.tv_sec + tv.tv_usec / 1000000.0;
+	r->frame_time = r->current_time - r->last_time;
+	r->last_time = r->current_time;
+	if (r->frame_time > 0.1)
+		r->frame_time = 0.1;
+	r->move_speed = r->base_move_speed * r->frame_time;
+	r->rot_speed = r->base_rot_speed * r->frame_time;
 }
 
 static void	perform_dda(t_map *map, t_raycaster_var *v)
@@ -105,19 +105,19 @@ static void	perform_dda(t_map *map, t_raycaster_var *v)
 	hit = 0;
 	while (hit == 0)
 	{
-		if (v->sideDistX < v->sideDistY)
+		if (v->side_dist_x < v->side_dist_y)
 		{
-			v->sideDistX += v->deltaDistX;
-			v->mapX += v->stepX;
+			v->side_dist_x += v->delta_dist_x;
+			v->map_x += v->step_x;
 			v->side = 0;
 		}
 		else
 		{
-			v->sideDistY += v->deltaDistY;
-			v->mapY += v->stepY;
+			v->side_dist_y += v->delta_dist_y;
+			v->map_y += v->step_y;
 			v->side = 1;
 		}
-		if (map->worldMap[v->mapX][v->mapY] > 0)
+		if (map->world_map[v->map_x][v->map_y] > 0)
 			hit = 1;
 	}
 }
@@ -125,57 +125,57 @@ static void	perform_dda(t_map *map, t_raycaster_var *v)
 static void	calculate_line(t_raycaster_var *v)
 {
 	if (v->side == 0)
-		v->perpWallDist = (v->sideDistX - v->deltaDistX);
+		v->perp_wall_dist = (v->side_dist_x - v->delta_dist_x);
 	else
-		v->perpWallDist = (v->sideDistY - v->deltaDistY);
-	v->lineHeight = (int)(defScreenHeight / v->perpWallDist);
-	v->drawStart = -v->lineHeight / 2 + defScreenHeight / 2;
-	if (v->drawStart < 0)
-		v->drawStart = 0;
-	v->drawEnd = v->lineHeight / 2 + defScreenHeight / 2;
-	if (v->drawEnd >= defScreenHeight)
-		v->drawEnd = defScreenHeight - 1;
+		v->perp_wall_dist = (v->side_dist_y - v->delta_dist_y);
+	v->line_height = (int)(DEFSCREENHEIGHT / v->perp_wall_dist);
+	v->draw_start = -v->line_height / 2 + DEFSCREENHEIGHT / 2;
+	if (v->draw_start < 0)
+		v->draw_start = 0;
+	v->draw_end = v->line_height / 2 + DEFSCREENHEIGHT / 2;
+	if (v->draw_end >= DEFSCREENHEIGHT)
+		v->draw_end = DEFSCREENHEIGHT - 1;
 }
 
 static void	calculate_side_distance(t_raycaster *r, t_raycaster_var *v)
 {
-	if (v->rayDirX < 0)
+	if (v->ray_dir_x < 0)
 	{
-		v->stepX = -1;
-		v->sideDistX = (r->posX - v->mapX) * v->deltaDistX;
+		v->step_x = -1;
+		v->side_dist_x = (r->pos_x - v->map_x) * v->delta_dist_x;
 	}
 	else
 	{
-		v->stepX = 1;
-		v->sideDistX = (v->mapX + 1.0 - r->posX) * v->deltaDistX;
+		v->step_x = 1;
+		v->side_dist_x = (v->map_x + 1.0 - r->pos_x) * v->delta_dist_x;
 	}
-	if (v->rayDirY < 0)
+	if (v->ray_dir_y < 0)
 	{
-		v->stepY = -1;
-		v->sideDistY = (r->posY - v->mapY) * v->deltaDistY;
+		v->step_y = -1;
+		v->side_dist_y = (r->pos_y - v->map_y) * v->delta_dist_y;
 	}
 	else
 	{
-		v->stepY = 1;
-		v->sideDistY = (v->mapY + 1.0 - r->posY) * v->deltaDistY;
+		v->step_y = 1;
+		v->side_dist_y = (v->map_y + 1.0 - r->pos_y) * v->delta_dist_y;
 	}
 }
 
 static void	calculate_ray(int x, t_raycaster *r, t_raycaster_var *v)
 {
-	v->cameraX = 2 * x / (double)defScreenWidth - 1;
-	v->rayDirX = r->dirX + r->planeX * v->cameraX;
-	v->rayDirY = r->dirY + r->planeY * v->cameraX;
-	v->mapX = (int)(r->posX);
-	v->mapY = (int)(r->posY);
-	if (v->rayDirX == 0)
-		v->deltaDistX = 1e30;
+	v->camera_x = 2 * x / (double)DEFSCREENWIDTH - 1;
+	v->ray_dir_x = r->dir_x + r->plane_x * v->camera_x;
+	v->ray_dir_y = r->dir_y + r->plane_y * v->camera_x;
+	v->map_x = (int)(r->pos_x);
+	v->map_y = (int)(r->pos_y);
+	if (v->ray_dir_x == 0)
+		v->delta_dist_x = 1e30;
 	else
-		v->deltaDistX = fabs(1 / v->rayDirX);
-	if (v->rayDirY == 0)
-		v->deltaDistY = 1e30;
+		v->delta_dist_x = fabs(1 / v->ray_dir_x);
+	if (v->ray_dir_y == 0)
+		v->delta_dist_y = 1e30;
 	else
-		v->deltaDistY = fabs(1 / v->rayDirY);
+		v->delta_dist_y = fabs(1 / v->ray_dir_y);
 }
 
 static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v)
@@ -183,61 +183,45 @@ static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v)
 	int		color;
 	int		direction;
 
-	if (v->side == 0) // vertical wall
+	if (v->side == 0)
 	{
-		if (v->stepX == -1)
-			direction = 3; // West
+		if (v->step_x == -1)
+			direction = 3;
 		else
-			direction = 4; // East
+			direction = 4;
 	}
-	else // horizontal wall
+	else
 	{
-		if (v->stepY == -1)
-			direction = 1; // North
+		if (v->step_y == -1)
+			direction = 1;
 		else
-			direction = 2; // South
+			direction = 2;
 	}
 	color = get_wall_color(direction);
 	draw_column(r, x, v, color);
 }
 
-// void	*init_raycaster_var(t_raycaster_var *v)
-// {
-// 	v->cameraX = 0.0;
-// 	v->rayDirX = 0.0;
-// 	v->rayDirY = 0.0;
-// 	v->mapX = 0;
-// 	v->mapY = 0;
-// 	v->sideDistX = 0.0;
-// 	v->sideDistY = 0.0;
-// 	v->deltaDistX = 0.0;
-// 	v->deltaDistY = 0.0;
-// 	v->perpWallDist = 0.0;
-// 	v->stepX = 0;
-// 	v->stepY = 0;
-// 	v->side = 0;
-// 	v->lineHeight = 0;
-// 	v->drawStart = 0;
-// 	v->drawEnd = 0;
-// }
-
-int	raycasting_function(t_raycaster *r, t_window *w,
-			t_map *map)
+int	raycasting_function(t_cub3d *cub3d)
 {
-	t_raycaster_var	*v;
+	t_raycaster_var	v;
 	int				x;
-	
-	v = NULL;
+	t_raycaster		*r;
+	t_window		*w;
+	t_map			*map;
+
+	r = cub3d->raycaster;
+	w = cub3d->window;
+	map = cub3d->map;
 	update_time_and_speed(r);
 	process_movement(r, map);
 	x = 0;
-	while (x < defScreenWidth)
+	while (x < DEFSCREENWIDTH)
 	{
-		calculate_ray(x, r, v);
-		calculate_side_distance(r, v);
-		perform_dda(map, v);
-		calculate_line(v);
-		draw_image(x, r, v);
+		calculate_ray(x, r, &v);
+		calculate_side_distance(r, &v);
+		perform_dda(map, &v);
+		calculate_line(&v);
+		draw_image(x, r, &v);
 		x++;
 	}
 	mlx_put_image_to_window(w->mlx, w->win, w->img, 0, 0);

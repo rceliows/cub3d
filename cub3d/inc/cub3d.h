@@ -13,15 +13,15 @@
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# define mapWidth 24
-# define mapHeight 24
+# define MAPWIDTH 24
+# define MAPHEIGHT 24 
 
-# ifndef defScreenWidth
-#  define defScreenWidth 1920
+# ifndef DEFSCREENWIDTH
+#  define DEFSCREENWIDTH 1920
 # endif
 
-# ifndef defScreenHeight
-#  define defScreenHeight 1080
+# ifndef DEFSCREENHEIGHT
+#  define DEFSCREENHEIGHT 1080
 # endif
 
 # include "../minilibx-linux/mlx.h"
@@ -49,111 +49,97 @@ typedef struct s_window
 	void	*mlx;
 	void	*win;
 	void	*img;
-//	double	imag;
 	int		center_x;
 	int		center_y;
 }	t_window;
 
 typedef struct s_map
 {
-	int	worldMap[mapWidth][mapHeight];
-	int	NorthTexture;
-	int	SouthTexture;
-	int	EastTexture;
-	int	WestTexture;;
-	int	CeilingColor;
-	int FloorColor;
-	double	start_positionX;
-	double	start_positionY;
-	int	start_direction;
+	int		world_map[MAPWIDTH][MAPHEIGHT];
+	int		north_texture;
+	int		south_texture;
+	int		east_texture;
+	int		west_texture;
+	int		ceiling_color;
+	int		floor_color;
+	double	start_position_x;
+	double	start_position_y;
+	int		start_direction;
 }	t_map;
 
 typedef struct s_raycaster
 {
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-	int		oldTime;
+	int				bits_per_pixel;
+	int				line_length;
+	int				endian;
 	unsigned int	ceiling_color;
 	unsigned int	floor_color;
-	double	dirX;
-	double	dirY;
-	double	planeX;
-	double	planeY;
-	double	frameTime;
-	double	lastTime;
-	double	screenScale;
-	double	baseMovespeed;
-	double	baseRotSpeed;
-	double	currentTime;
-	double	rotSpeed;
-	double	moveSpeed;
-	double	posX;
-	double	posY;
-	char	*img_data;
-	t_keys	keys;
+	double			dir_x;
+	double			dir_y;
+	double			plane_x;
+	double			plane_y;
+	double			frame_time;
+	double			last_time;
+	double			screen_scale;
+	double			base_move_speed;
+	double			base_rot_speed;
+	double			current_time;
+	double			rot_speed;
+	double			move_speed;
+	double			pos_x;
+	double			pos_y;
+	char			*img_data;
+	t_keys			keys;
 }	t_raycaster;
 
 typedef struct s_raycaster_var
 {
-	// Ray calculation
-	double			cameraX;
-	double			rayDirX;
-	double			rayDirY;
-	
-	// Map position
-	int				mapX;
-	int				mapY;
-	
-	// Distance calculation
-	double			sideDistX;
-	double			sideDistY;
-	double			deltaDistX;
-	double			deltaDistY;
-	double			perpWallDist;
-	
-	// Step direction
-	int				stepX;
-	int				stepY;
-	
-	// Wall detection
+	double			camera_x;
+	double			ray_dir_x;
+	double			ray_dir_y;
+	int				map_x;
+	int				map_y;
+	double			side_dist_x;
+	double			side_dist_y;
+	double			delta_dist_x;
+	double			delta_dist_y;
+	double			perp_wall_dist;
+	int				step_x;
+	int				step_y;
 	int				side;
-	
-	// Drawing
-	int				lineHeight;
-	int				drawStart;
-	int				drawEnd;
+	int				line_height;
+	int				draw_start;
+	int				draw_end;
 }	t_raycaster_var;
 
 typedef struct s_cub3d
 {
-	t_keys	*keys;
+	t_keys		*keys;
 	t_window	*window;
-	t_map	*map;
+	t_map		*map;
 	t_raycaster	*raycaster;
 }	t_cub3d;
 
 /* Raycaster */
-int	raycasting_function(t_raycaster *r, t_window *w, t_map *map);
+int			raycasting_function(t_cub3d *cub3d);
 
 /* Key binds */
-void	prep_hooks(t_raycaster *raycaster, t_window *window);
-int		key_press(int keycode, t_raycaster *raycaster, t_cub3d *cub3d);
-int		key_release(int keycode, t_raycaster *raycaster);
-int		handle_close(t_cub3d *cub3d);
-void	process_movement(t_raycaster *raycaster, t_map *map);
-int		mouse_move(int x, int y, t_raycaster *raycaster, t_window *window);
+void		prep_hooks(t_cub3d *cub3d);
+int			key_press(int keycode, t_cub3d *cub3d);
+int			key_release(int keycode, t_cub3d *cub3d);
+int			handle_close(t_cub3d *cub3d);
+void		process_movement(t_raycaster *raycaster, t_map *map);
+int			mouse_move(int x, int y, t_cub3d *cub3d);
 
 /* Inits and cleanups */
-t_keys	*init_keys(void);
-t_map	*init_map(void);
+t_keys		*init_keys(void);
+t_map		*init_map(void);
 t_window	*init_window(void);
-t_raycaster	*init_raycaster(t_window *w, int direction);
-void	cleanup_window(t_window *window);
-// void	cleanup_raycaster(t_raycaster *raycaster);
-void	cleanup_cub3d(t_cub3d *cub3d);
+t_raycaster	*init_raycaster(t_window *w, t_map *map, int direction);
+void		cleanup_window(t_window *window);
+void		cleanup_cub3d(t_cub3d *cub3d);
 
 /* Utils */
-void	error_exit(t_cub3d *raycaster);
+void		error_exit(t_cub3d *raycaster);
 
 #endif

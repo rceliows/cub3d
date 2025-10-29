@@ -25,5 +25,5 @@ t_keys	*init_keys(void)
 	k->d = 0;
 	k->left = 0;
 	k->right = 0;
-	return(k);
+	return (k);
 }
