@@ -85,6 +85,7 @@ typedef struct s_raycaster
 	double	screenScale;
 	double	baseMovespeed;
 	double	baseRotSpeed;
+	double	currentTime;
 	double	rotSpeed;
 	double	moveSpeed;
 	double	posX;
@@ -95,9 +96,6 @@ typedef struct s_raycaster
 
 typedef struct s_raycaster_var
 {
-	// Timing
-	double			currentTime;
-	
 	// Ray calculation
 	double			cameraX;
 	double			rayDirX;
@@ -133,11 +131,10 @@ typedef struct s_cub3d
 	t_window	*window;
 	t_map	*map;
 	t_raycaster	*raycaster;
-	t_raycaster_var *var;
 }	t_cub3d;
 
 /* Raycaster */
-int		raycasting_function(t_raycaster *raycaster, t_window *window, t_map *map, t_raycaster_var *var);
+int	raycasting_function(t_raycaster *r, t_window *w, t_map *map);
 
 /* Key binds */
 void	prep_hooks(t_raycaster *raycaster, t_window *window);
@@ -152,7 +149,6 @@ t_keys	*init_keys(void);
 t_map	*init_map(void);
 t_window	*init_window(void);
 t_raycaster	*init_raycaster(t_window *w, int direction);
-t_raycaster_var	*init_raycaster_var(void);
 void	cleanup_window(t_window *window);
 // void	cleanup_raycaster(t_raycaster *raycaster);
 void	cleanup_cub3d(t_cub3d *cub3d);

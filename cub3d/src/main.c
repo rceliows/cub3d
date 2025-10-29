@@ -26,9 +26,6 @@ static void	init_cub3d(t_cub3d *cub3d, int direction)
 	cub3d->raycaster = init_raycaster(cub3d->window, direction);
 	if (!cub3d->raycaster)
 		error_exit(cub3d);
-	cub3d->var = init_raycaster_var();
-	if (!cub3d->var)
-		error_exit(cub3d);
 }
 
 int	main(int argc, char **argv)

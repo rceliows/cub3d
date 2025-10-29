@@ -61,32 +61,7 @@ t_raycaster	*init_raycaster(t_window *w, int direction)
 	r->moveSpeed = r->baseMovespeed * r->frameTime;
 	r->rotSpeed = r->baseRotSpeed * r->frameTime;
 	r->oldTime = 0;
+	r->currentTime = 0.0;
 	return (r);
 }
 
-t_raycaster_var	*init_raycaster_var(void)
-{
-	t_raycaster_var	*v;
-
-	v = malloc(sizeof(t_raycaster_var));
-	if (!v)
-		return (NULL);
-	v->currentTime = 0.0;
-	v->cameraX = 0.0;
-	v->rayDirX = 0.0;
-	v->rayDirY = 0.0;
-	v->mapX = 0;
-	v->mapY = 0;
-	v->sideDistX = 0.0;
-	v->sideDistY = 0.0;
-	v->deltaDistX = 0.0;
-	v->deltaDistY = 0.0;
-	v->perpWallDist = 0.0;
-	v->stepX = 0;
-	v->stepY = 0;
-	v->side = 0;
-	v->lineHeight = 0;
-	v->drawStart = 0;
-	v->drawEnd = 0;
-	return(v);
-}

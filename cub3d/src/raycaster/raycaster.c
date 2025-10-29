@@ -84,14 +84,14 @@ static void	draw_column(t_raycaster *r, int x,
 	}
 }
 
-static void	update_time_and_speed(t_raycaster *r, t_raycaster_var *v)
+static void	update_time_and_speed(t_raycaster *r)
 {
 	struct timeval	tv;
 	
 	gettimeofday(&tv, NULL);
-	v->currentTime = tv.tv_sec + tv.tv_usec / 1000000.0;
-	r->frameTime = v->currentTime - r->lastTime;
-	r->lastTime = v->currentTime;
+	r->currentTime = tv.tv_sec + tv.tv_usec / 1000000.0;
+	r->frameTime = r->currentTime - r->lastTime;
+	r->lastTime = r->currentTime;
 	if (r->frameTime > 0.1)
 		r->frameTime = 0.1;
 	r->moveSpeed = r->baseMovespeed * r->frameTime;
@@ -201,12 +201,34 @@ static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v)
 	draw_column(r, x, v, color);
 }
 
-int	raycasting_function(t_raycaster *r, t_window *w,
-			t_map *map, t_raycaster_var *v)
-{
-	int				x;
+// void	*init_raycaster_var(t_raycaster_var *v)
+// {
+// 	v->cameraX = 0.0;
+// 	v->rayDirX = 0.0;
+// 	v->rayDirY = 0.0;
+// 	v->mapX = 0;
+// 	v->mapY = 0;
+// 	v->sideDistX = 0.0;
+// 	v->sideDistY = 0.0;
+// 	v->deltaDistX = 0.0;
+// 	v->deltaDistY = 0.0;
+// 	v->perpWallDist = 0.0;
+// 	v->stepX = 0;
+// 	v->stepY = 0;
+// 	v->side = 0;
+// 	v->lineHeight = 0;
+// 	v->drawStart = 0;
+// 	v->drawEnd = 0;
+// }
 
-	update_time_and_speed(r, v);
+int	raycasting_function(t_raycaster *r, t_window *w,
+			t_map *map)
+{
+	t_raycaster_var	*v;
+	int				x;
+	
+	v = NULL;
+	update_time_and_speed(r);
 	process_movement(r, map);
 	x = 0;
 	while (x < defScreenWidth)
