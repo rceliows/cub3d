@@ -13,8 +13,8 @@
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# define MAPWIDTH 24
 # define MAPHEIGHT 24 
+# define MAPWIDTH 24
 
 # ifndef DEFSCREENWIDTH
 #  define DEFSCREENWIDTH 1920
@@ -55,7 +55,7 @@ typedef struct s_window
 
 typedef struct s_map
 {
-	int		world_map[MAPWIDTH][MAPHEIGHT];
+	int		world_map[MAPHEIGHT][MAPWIDTH];
 	int		north_texture;
 	int		south_texture;
 	int		east_texture;

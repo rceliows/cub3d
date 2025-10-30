@@ -19,7 +19,7 @@ t_map	*init_map(void)
 	m = malloc(sizeof(t_map));
 	if (!m)
 		return (NULL);
-	int	templatemap[MAPWIDTH][MAPHEIGHT]=
+	int	templatemap[MAPHEIGHT][MAPWIDTH]=
 	{
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -46,9 +46,9 @@ t_map	*init_map(void)
 	{1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 	};
-	for (int i = 0; i < MAPWIDTH; i++)
+	for (int i = 0; i < MAPHEIGHT; i++)
 	{
-		for (int j = 0; j < MAPHEIGHT; j++)
+		for (int j = 0; j < MAPWIDTH; j++)
 			m->world_map[i][j] = templatemap[i][j];
 	}
 	m->north_texture = 0xFF0000;

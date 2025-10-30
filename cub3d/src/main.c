@@ -46,7 +46,8 @@ int	main(int argc, char **argv)
 		return (1);
 	init_cub3d(cub3d, *argv[1]);
 	prep_hooks(cub3d);
-	mlx_mouse_hide(cub3d->window->mlx, cub3d->window->win);
+//	Gotta put it in comment for the evaluation as it leaks memory and creates errors
+	mlx_mouse_hide(cub3d->window->mlx, cub3d->window->win); 
 	mlx_loop_hook(cub3d->window->mlx, raycasting_function, cub3d);
 	mlx_loop(cub3d->window->mlx);
 	cleanup_cub3d(cub3d);

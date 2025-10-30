@@ -35,24 +35,56 @@ int	get_wall_color(int direction)
 	return (color);
 }
 
-void	display_fps(t_raycaster *r, t_window *w)
-{
-	static double	fps_timer = 0;
-	static int		frame_count = 0;
-	static double	current_fps = 0;
-	char			fps_str[50];
+// void	display_minimap(t_raycaster_var *v, t_window *w, t_map *map)
+// {
+// 	char		minimap[MAPHEIGHT][MAPWIDTH];
+// 	int			i;
+// 	int			j;
 
-	fps_timer += r->frame_time;
-	frame_count++;
-	if (fps_timer >= 1.0)
-	{
-		current_fps = frame_count / fps_timer;
-		frame_count = 0;
-		fps_timer = 0;
-	}
-	sprintf(fps_str, "FPS: %.1f", current_fps);
-	mlx_string_put(w->mlx, w->win, 10, 20, 0xFFFFFF, fps_str);
-}
+// 	i = 0;
+// 	while(i < MAPHEIGHT)
+// 	{
+// 		j = 0;
+// 		while(j < MAPWIDTH)
+// 		{
+// 			if (i == v->map_x && j == v->map_y)
+// 				minimap[i][j] = 'x';
+// 			else if (map->world_map[i][j] == 1)
+// 				minimap[i][j] = '#';
+// 			else
+// 				minimap[i][j] = ' ';
+// 			j++;
+// 		}
+// 		i++;
+// 	}
+// 	i = 0;
+// 	j = 20;
+// 	while(i < MAPHEIGHT)
+// 	{
+// 		mlx_string_put(w->mlx, w->win, 10, j, 0xFFFFFF, minimap[i]);
+// 		j += j;
+// 		i++;
+// 	}
+// }
+
+// static void	display_fps(t_raycaster *r, t_window *w)
+// {
+// 	static double	fps_timer = 0;
+// 	static int		frame_count = 0;
+// 	static double	current_fps = 0;
+// 	char			fps_str[50];
+
+// 	fps_timer += r->frame_time;
+// 	frame_count++;
+// 	if (fps_timer >= 1.0)
+// 	{
+// 		current_fps = frame_count / fps_timer;
+// 		frame_count = 0;
+// 		fps_timer = 0;
+// 	}
+// 	sprintf(fps_str, "FPS: %.1f", current_fps);
+// 	mlx_string_put(w->mlx, w->win, 10, 20, 0xFFFFFF, fps_str);
+// }
 
 static void	draw_column(t_raycaster *r, int x,
 				t_raycaster_var *v, int wallColor)
@@ -226,6 +258,7 @@ int	raycasting_function(t_cub3d *cub3d)
 		x++;
 	}
 	mlx_put_image_to_window(w->mlx, w->win, w->img, 0, 0);
-	display_fps(r, w);
+//	display_minimap(&v, w, map);
+//	display_fps(r, w);
 	return (0);
 }
