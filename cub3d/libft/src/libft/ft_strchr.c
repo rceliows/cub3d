@@ -1,31 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_keys.c                                        :+:      :+:    :+:   */
+/*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rceliows <rceliows@student.42belgium.      +#+  +:+       +#+        */
+/*   By: rceliows <rceliows@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/29 16:38:12 by rceliows          #+#    #+#             */
-/*   Updated: 2025/10/29 16:38:13 by rceliows         ###   ########.fr       */
+/*   Created: 2025/04/16 13:37:01 by rceliows          #+#    #+#             */
+/*   Updated: 2025/04/16 13:37:02 by rceliows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/cub3d.h"
+#include "../../inc/libft.h"
 
-t_keys	*init_keys(void)
+char	*ft_strchr(const char *s, int c)
 {
-	t_keys	*k;
+	int	i;
 
-	k = malloc(sizeof(t_keys));
-	if (!k)
-		return (NULL);
-	k->w = 0;
-	k->a = 0;
-	k->s = 0;
-	k->d = 0;
-	k->left = 0;
-	k->right = 0;
-	k->minimap = 0;
-	k->fps = 0;
-	return (k);
+	i = 0;
+	while (s[i] || (char)c == '\0')
+	{
+		if (s[i] == (char)c)
+			return ((char *)&s[i]);
+		i++;
+	}
+	return (NULL);
 }

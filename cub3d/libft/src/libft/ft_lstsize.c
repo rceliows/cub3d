@@ -1,31 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_keys.c                                        :+:      :+:    :+:   */
+/*   ft_lstsize.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rceliows <rceliows@student.42belgium.      +#+  +:+       +#+        */
+/*   By: rceliows <rceliows@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/29 16:38:12 by rceliows          #+#    #+#             */
-/*   Updated: 2025/10/29 16:38:13 by rceliows         ###   ########.fr       */
+/*   Created: 2025/04/22 18:26:11 by rceliows          #+#    #+#             */
+/*   Updated: 2025/04/22 18:26:20 by rceliows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/cub3d.h"
+#include "../../inc/libft.h"
 
-t_keys	*init_keys(void)
+int	ft_lstsize(t_list *lst)
 {
-	t_keys	*k;
+	int	i;
 
-	k = malloc(sizeof(t_keys));
-	if (!k)
-		return (NULL);
-	k->w = 0;
-	k->a = 0;
-	k->s = 0;
-	k->d = 0;
-	k->left = 0;
-	k->right = 0;
-	k->minimap = 0;
-	k->fps = 0;
-	return (k);
+	i = 0;
+	while (lst)
+	{
+		i++;
+		lst = lst->next;
+	}
+	return (i);
 }

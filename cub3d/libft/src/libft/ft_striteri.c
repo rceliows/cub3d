@@ -1,31 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_keys.c                                        :+:      :+:    :+:   */
+/*   ft_striteri.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rceliows <rceliows@student.42belgium.      +#+  +:+       +#+        */
+/*   By: rceliows <rceliows@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/29 16:38:12 by rceliows          #+#    #+#             */
-/*   Updated: 2025/10/29 16:38:13 by rceliows         ###   ########.fr       */
+/*   Created: 2025/04/16 13:52:17 by rceliows          #+#    #+#             */
+/*   Updated: 2025/04/16 13:52:19 by rceliows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/cub3d.h"
+#include "../../inc/libft.h"
 
-t_keys	*init_keys(void)
+void	ft_striteri(char *s, void (*f)(unsigned int, char*))
 {
-	t_keys	*k;
+	unsigned int	i;
 
-	k = malloc(sizeof(t_keys));
-	if (!k)
-		return (NULL);
-	k->w = 0;
-	k->a = 0;
-	k->s = 0;
-	k->d = 0;
-	k->left = 0;
-	k->right = 0;
-	k->minimap = 0;
-	k->fps = 0;
-	return (k);
+	if (!s || !f)
+		return ;
+	i = 0;
+	while (s[i] != '\0')
+	{
+		f(i, &s[i]);
+		i++;
+	}
 }

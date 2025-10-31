@@ -1,31 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_keys.c                                        :+:      :+:    :+:   */
+/*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rceliows <rceliows@student.42belgium.      +#+  +:+       +#+        */
+/*   By: rceliows <rceliows@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/29 16:38:12 by rceliows          #+#    #+#             */
-/*   Updated: 2025/10/29 16:38:13 by rceliows         ###   ########.fr       */
+/*   Created: 2025/04/16 13:36:02 by rceliows          #+#    #+#             */
+/*   Updated: 2025/04/16 13:36:04 by rceliows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/cub3d.h"
+#include "../../inc/libft.h"
 
-t_keys	*init_keys(void)
+void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
-	t_keys	*k;
+	size_t	i;
 
-	k = malloc(sizeof(t_keys));
-	if (!k)
+	if (!dest && !src)
 		return (NULL);
-	k->w = 0;
-	k->a = 0;
-	k->s = 0;
-	k->d = 0;
-	k->left = 0;
-	k->right = 0;
-	k->minimap = 0;
-	k->fps = 0;
-	return (k);
+	i = 0;
+	while (i < n)
+	{
+		((unsigned char *)dest)[i] = ((unsigned char *)src)[i];
+		i++;
+	}
+	return (dest);
 }

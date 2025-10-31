@@ -1,31 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_keys.c                                        :+:      :+:    :+:   */
+/*   ft_strcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rceliows <rceliows@student.42belgium.      +#+  +:+       +#+        */
+/*   By: rceliows <rceliows@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/29 16:38:12 by rceliows          #+#    #+#             */
-/*   Updated: 2025/10/29 16:38:13 by rceliows         ###   ########.fr       */
+/*   Created: 2025/08/16 22:06:39 by rceliows          #+#    #+#             */
+/*   Updated: 2025/08/16 22:06:40 by rceliows         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/cub3d.h"
+#include "../../inc/libft.h"
 
-t_keys	*init_keys(void)
+char	*ft_strcpy(char *dest, const char *src)
 {
-	t_keys	*k;
+	char	*dest_ptr;
 
-	k = malloc(sizeof(t_keys));
-	if (!k)
-		return (NULL);
-	k->w = 0;
-	k->a = 0;
-	k->s = 0;
-	k->d = 0;
-	k->left = 0;
-	k->right = 0;
-	k->minimap = 0;
-	k->fps = 0;
-	return (k);
+	if (!dest || !src)
+		return (dest);
+	dest_ptr = dest;
+	while (*src)
+	{
+		*dest_ptr = *src;
+		dest_ptr++;
+		src++;
+	}
+	*dest_ptr = '\0';
+	return (dest);
 }

@@ -35,25 +35,6 @@ int	get_wall_color(int direction)
 	return (color);
 }
 
-void	display_fps(t_raycaster *r, t_window *w)
-{
-	static double	fps_timer = 0;
-	static int		frame_count = 0;
-	static double	current_fps = 0;
-	char			fps_str[50];
-
-	fps_timer += r->frame_time;
-	frame_count++;
-	if (fps_timer >= 1.0)
-	{
-		current_fps = frame_count / fps_timer;
-		frame_count = 0;
-		fps_timer = 0;
-	}
-	sprintf(fps_str, "FPS: %.1f", current_fps);
-	mlx_string_put(w->mlx, w->win, 10, 20, 0xFFFFFF, fps_str);
-}
-
 static void	draw_column(t_raycaster *r, int x,
 				t_raycaster_var *v, int wallColor)
 {
@@ -201,6 +182,62 @@ static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v)
 	draw_column(r, x, v, color);
 }
 
+void	display_minimap(t_raycaster *r, t_window *w, t_map *map)
+{
+	char		minimap[50];
+	int			i;
+	int			j;
+	int			y;
+
+	i = 0;
+	y = 10;
+	while(i < MAPHEIGHT)
+	{
+		j = 0;
+		while(j < MAPWIDTH)
+		{
+			if (i == (int)(r->pos_x) && j == (int)(r->pos_y))
+				minimap[j] = 'x';
+			else if (map->world_map[i][j] == 1)
+				minimap[j] = '#';
+			else
+				minimap[j] = ' ';
+			j++;
+		}
+//		minimap[j] = '\0';
+		mlx_string_put(w->mlx, w->win, 10, y, 0xFFFFFF, minimap);
+		y += 8;
+		i++;
+	}
+	// i = 0;
+	// j = 20;
+	// while(i < MAPHEIGHT)
+	// {
+	// 	mlx_string_put(w->mlx, w->win, 10, j, 0xFFFFFF, minimap[i]);
+	// 	j += 8;
+	// 	i++;
+	// }
+}
+
+void	display_fps(t_raycaster *r, t_window *w)
+{
+	static double	fps_timer = 0;
+	static int		frame_count = 0;
+	static double	current_fps = 0;
+	char			fps_str[50];
+
+	fps_timer += r->frame_time;
+	frame_count++;
+	if (fps_timer >= 1.0)
+	{
+		current_fps = frame_count / fps_timer;
+		frame_count = 0;
+		fps_timer = 0;
+	}
+	sprintf(fps_str, "FPS: %.1f", current_fps);
+	mlx_string_put(w->mlx, w->win, 10, 20, 0xFFFFFF, fps_str);
+}
+
 int	raycasting_function(t_cub3d *cub3d)
 {
 	t_raycaster_var	v;
@@ -212,7 +249,7 @@ int	raycasting_function(t_cub3d *cub3d)
 	r = cub3d->raycaster;
 	w = cub3d->window;
 	map = cub3d->map;
-	r->keys = *cub3d->keys;
+//	r->keys = *cub3d->keys;
 	update_time_and_speed(r);
 	process_movement(r, map);
 	x = 0;
@@ -226,6 +263,9 @@ int	raycasting_function(t_cub3d *cub3d)
 		x++;
 	}
 	mlx_put_image_to_window(w->mlx, w->win, w->img, 0, 0);
-	display_fps(r, w);
+	if (r->keys.fps)
+		display_fps(r, w);
+	if (r->keys.minimap)
+		display_minimap(r, w, map);
 	return (0);
 }

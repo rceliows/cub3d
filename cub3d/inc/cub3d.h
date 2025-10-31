@@ -25,6 +25,8 @@
 # endif
 
 # include "../minilibx-linux/mlx.h"
+# include "../libft/inc/libft.h"
+# include "../libft/inc/ft_printf.h"
 # include <stdlib.h>
 # include <stdio.h>
 # include <sys/time.h>
@@ -42,6 +44,8 @@ typedef struct s_keys
 	int	d;
 	int	left;
 	int	right;
+	int	minimap;
+	int	fps;
 }	t_keys;
 
 typedef struct s_window

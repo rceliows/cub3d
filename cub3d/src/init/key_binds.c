@@ -37,6 +37,14 @@ int	key_press(int keycode, t_cub3d *cub3d)
 		r->keys.left = 1;
 	else if (keycode == 65363)
 		r->keys.right = 1;
+	else if (keycode == 65361)
+		r->keys.minimap = 1;
+	else if (keycode == 65363)
+		r->keys.fps = 1;
+	else if (keycode == 41)
+		r->keys.minimap = !r->keys.minimap;
+	else if (keycode == 58)
+		r->keys.minimap ^= !r->keys.minimap;
 	else if (keycode == 65307)
 	{
 		printf("ESC pressed, exiting...\n");

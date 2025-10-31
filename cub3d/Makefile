@@ -2,6 +2,7 @@
 NAME			= cub3d
 
 # Directories
+LIBFT			= ./libft/libft.a
 MINILIBX		= ./minilibx-linux/libmlx_Linux.a
 INC			= inc/
 SRC_DIR			= src/
@@ -37,6 +38,9 @@ OBJ 			= $(patsubst $(SRC_DIR)%.c,$(OBJ_DIR)%.o,$(SRCS))
 start:				
 			@make all
 
+$(LIBFT):
+			@make -C ./libft
+
 # Check if minilibx-linux directory exists, if not clone it
 ./minilibx-linux:
 			@echo "MinilibX not found. Cloning from repository..."
@@ -50,8 +54,8 @@ $(MINILIBX):		./minilibx-linux
 
 all: 			$(NAME)
 
-$(NAME): 		$(OBJ) $(MINILIBX)
-			@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIBS)
+$(NAME): 		$(OBJ) $(LIBFT) $(MINILIBX)
+			@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIBFT) $(LIBS)
 
 # Compile object files from source files
 $(OBJ_DIR)%.o:		$(SRC_DIR)%.c ./minilibx-linux
@@ -60,9 +64,11 @@ $(OBJ_DIR)%.o:		$(SRC_DIR)%.c ./minilibx-linux
 
 clean:
 			@$(RM) -r $(OBJ_DIR)
+			@make clean -C ./libft
 
 fclean: 		clean
 			@$(RM) $(NAME)
+			@$(RM) $(LIBFT)
 
 re: 			fclean all
 
