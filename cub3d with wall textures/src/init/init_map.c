@@ -18,16 +18,16 @@ int		extract_images(t_map *map, t_window *w)
 	int	height;
 	
 	map->texture[0] = mlx_xpm_file_to_image(w->mlx, map->n_xpm_path, &width, &height);
-	if (!map->n_image)
+	if (!map->texture[0])
 		return (0);
 	map->texture[1] = mlx_xpm_file_to_image(w->mlx, map->s_xpm_path, &width, &height);
-	if (!map->s_image)
+	if (!map->texture[1])
 		return (0);
 	map->texture[3] = mlx_xpm_file_to_image(w->mlx, map->e_xpm_path, &width, &height);
-	if (!map->e_image)
+	if (!map->texture[3])
 		return (0);
 	map->texture[2] = mlx_xpm_file_to_image(w->mlx, map->w_xpm_path, &width, &height);
-	if (!map->w_image)
+	if (!map->texture[2])
 		return (0);
 	return (1);
 }
@@ -71,10 +71,10 @@ t_map	*init_map(t_window *w)
 		for (int j = 0; j < MAPWIDTH; j++)
 			map->world_map[i][j] = templatemap[i][j];
 	}
-	map->n_xpm_path = ft_strdup("./textures/n_image.xpm");
-	map->s_xpm_path = ft_strdup("./textures/s_image.xpm");
-	map->e_xpm_path = ft_strdup("./textures/e_image.xpm");
-	map->w_xpm_path = ft_strdup("./textures/w_image.xpm");
+	map->n_xpm_path = ft_strdup("./textures/north_texture.xpm");
+	map->s_xpm_path = ft_strdup("./textures/south_texture.xpm");
+	map->e_xpm_path = ft_strdup("./textures/east_texture.xpm");
+	map->w_xpm_path = ft_strdup("./textures/west_texture.xpm");
 	if (!extract_images(map, w))
 		return (NULL);
 	map->ceiling_color = 0x87CEEB;
@@ -87,14 +87,14 @@ t_map	*init_map(t_window *w)
 
 void    cleanup_map(t_map *map, t_window *w)
 {
-	if (map->n_image)
-		mlx_destroy_image(w->mlx, map->n_image);
-	if (map->s_image)
-		mlx_destroy_image(w->mlx, map->s_image);
-	if (map->e_image)
-		mlx_destroy_image(w->mlx, map->e_image);
-	if (map->w_image)
-		mlx_destroy_image(w->mlx, map->w_image);
+	if (map->texture[0])
+		mlx_destroy_image(w->mlx, map->texture[0]);
+	if (map->texture[1])
+		mlx_destroy_image(w->mlx, map->texture[1]);
+	if (map->texture[3])
+		mlx_destroy_image(w->mlx, map->texture[3]);
+	if (map->texture[2])
+		mlx_destroy_image(w->mlx, map->texture[2]);
 	if (map->n_xpm_path)
 		free(map->n_xpm_path);
 	if (map->s_xpm_path)

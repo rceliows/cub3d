@@ -12,23 +12,6 @@
 
 #include "../inc/cub3d.h"
 
-int	get_wall_color(int direction)
-{
-	int	color;
-
-	if (direction == 1)
-		color = map->n_image;
-	else if (direction == 2)
-		color = map->s_image;
-	else if (direction == 3)
-		color = map->w_image;
-	else if (direction == 4)
-		color = map->e_image;
-	else
-		color = 0xFF00FF;
-	return (color);
-}
-
 static void	update_time_and_speed(t_raycaster *r)
 {
 	struct timeval	tv;
@@ -123,86 +106,89 @@ static void	calculate_ray(int x, t_raycaster *r, t_raycaster_var *v)
 		v->delta_dist_y = fabs(1 / v->ray_dir_y);
 }
 
-void	set_pixel(t_window *w, int x, int y, int color)
+void	set_pixel(int x, int y, int color, t_raycaster *r)
 {
 	char	*pixel_ptr;
-    char	*img_data;
-    int		bits_per_pixel;
-    int		line_length;
-    int		endian;
 
-    img_data = mlx_get_data_addr(w->img, &bits_per_pixel, &line_length, &endian);
 	if (x >= 0 && x < DEFSCREENWIDTH && y >= 0 && y < DEFSCREENHEIGHT)
 	{
-		pixel_ptr = w->img_data
-			+ (y * w->line_length + x * (w->bits_per_pixel / 8));
+		pixel_ptr = r->img_data
+			+ (y * r->line_length + x * (r->bits_per_pixel / 8));
 		*(unsigned int *)pixel_ptr = color;
 	}
 }
 
-
-/////////////////////////////////////////////////////////////////////////////////////
-
-int get_color(int x, int y, int bits_per_pixel, char *img_data, int line_length)
+int	get_texture_pixel(void *texture, int x, int y)
 {
-    int pixel_size;
-    char *pixel_ptr;
-	int color;
+	char	*img_data;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+	char	*pixel_ptr;
 
-	pixel_size = bits_per_pixel / 8;
-	pixel_ptr = img_data + y * line_length + x * pixel_size;
-    color = *(unsigned int *)pixel_ptr;
-    return color;
+	img_data = mlx_get_data_addr(texture,
+			&bits_per_pixel, &line_length, &endian);
+	pixel_ptr = img_data + (y * line_length) + (x * (bits_per_pixel / 8));
+	return (*(unsigned int *)pixel_ptr);
 }
 
-int get_texture_pixel(void *texture, int x, int y)
+static void	draw_floor_ceiling(int x, t_raycaster *r, t_raycaster_var *v)
 {
-    char *img_data;
-    int bits_per_pixel;
-    int line_length;
-    int endian;
+	int	y;
 
-    img_data = mlx_get_data_addr(texture, &bits_per_pixel, &line_length, &endian);
-    return (get_color(x, y, bits_per_pixel, img_data, line_length));
-}
-
-static void draw_walls(t_raycaster_var *v, int x, t_raycaster *r, void *texture, t_window *w)
-{
-	int			d;
-    double		wall_x;
-	int			tex_x;
-	int			tex_y;
-	int			y;
-	unsigned int color;
-
-    if(v->side == 0)
-        wall_x = r->pos_Y + v->perp_wall_dist * v->ray_dir_y;
-    else
-        wall_x = r->posX + v->perp_wall_dist * v->ray_dir_x;
-    wall_x -= floor(wall_x);
-	tex_x = (int)(wall_x * (double)TEXTURESIZE);
-    if (v->side == 0 && r->rayDirX > 0)
-		tex_x = TEXTURESIZE - tex_x - 1;
-    if (v->side == 1 && r->rayDirY < 0)
-		tex_x = TEXTURESIZE - tex_x - 1;
-	y = v->draw_start
-    while (y < v->draw_end)
-    {
-        d = y * 256 - DEFSCREENHEIGHT * 128 + r->lineHeight * 128;
-        tex_y = ((d * TEXTURESIZE) / r->lineHeight) / 256;
-        color = get_texture_pixel(texture, tex_x, tex_y);
-        if (r->side == 1)
-            color = (color >> 1) & 0x7F7F7F;
-        set_pixel(w, x, y, color);
+	y = 0;
+	while (y < v->draw_start)
+	{
+		set_pixel(x, y, r->ceiling_color, r);
 		y++;
-    }
+	}
+	y = v->draw_end;
+	while (y < DEFSCREENHEIGHT)
+	{
+		set_pixel(x, y, r->floor_color, r);
+		y++;
+	}
 }
 
+static void	calculate_texture_x(t_raycaster *r, t_raycaster_var *v, int *tex_x)
+{
+	double	wall_x;
 
-static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v, t_map *map, t_window *w)
+	if (v->side == 0)
+		wall_x = r->pos_y + v->perp_wall_dist * v->ray_dir_y;
+	else
+		wall_x = r->pos_x + v->perp_wall_dist * v->ray_dir_x;
+	wall_x -= floor(wall_x);
+	*tex_x = (int)(wall_x * (double)TEXTURESIZE);
+}
+
+static void	draw_walls(t_raycaster *r, int x, t_raycaster_var *v, void *texture)
+{
+	int				tex_x;
+	int				y;
+	int				d;
+	int				tex_y;
+	unsigned int	color;
+
+	calculate_texture_x(r, v, &tex_x);
+	y = v->draw_start;
+	while (y < v->draw_end)
+	{
+		d = y * 256 - DEFSCREENHEIGHT * 128 + v->line_height * 128;
+		tex_y = ((d * TEXTURESIZE) / v->line_height) / 256;
+		color = get_texture_pixel(texture, tex_x, tex_y);
+		if (v->side == 1)
+			color = (color >> 1) & 0x7F7F7F;
+		set_pixel(x, y, color, r);
+		y++;
+	}
+}
+
+static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v, t_map *map)
 {
 	int		direction;
 
+	draw_floor_ceiling(x, r, v);
 	if (v->side == 0)
 	{
 		if (v->step_x == -1)
@@ -217,7 +203,7 @@ static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v, t_map *map, t_
 		else
 			direction = 1;
 	}
-	draw_walls(r, x, v, map->texture[direction], w);
+	draw_walls(r, x, v, map->texture[direction]);
 }
 
 void	paint_sector(char *pixel_ptr, int line_length,
@@ -308,7 +294,6 @@ int	raycasting_function(t_cub3d *cub3d)
 	r = cub3d->raycaster;
 	w = cub3d->window;
 	map = cub3d->map;
-	r->keys = *cub3d->keys;
 	update_time_and_speed(r);
 	process_movement(r, map);
 	x = 0;
@@ -318,7 +303,7 @@ int	raycasting_function(t_cub3d *cub3d)
 		calculate_side_distance(r, &v);
 		perform_dda(map, &v);
 		calculate_line(&v);
-		draw_image(x, r, &v, map, w);
+		draw_image(x, r, &v, map);
 		x++;
 	}
 	mlx_put_image_to_window(w->mlx, w->win, w->img, 0, 0);

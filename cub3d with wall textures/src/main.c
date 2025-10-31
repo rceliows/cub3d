@@ -30,6 +30,7 @@ static void	init_cub3d(t_cub3d *cub3d, int direction)
 	cub3d->raycaster = init_raycaster(cub3d->window, cub3d->map, direction);
 	if (!cub3d->raycaster)
 		error_exit(cub3d);
+	cub3d->raycaster->keys = *cub3d->keys;
 }
 
 // a supression can ocur when using valgrind due to a false flag
