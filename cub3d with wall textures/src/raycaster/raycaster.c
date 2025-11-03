@@ -56,13 +56,17 @@ static void	calculate_line(t_raycaster_var *v)
 		v->perp_wall_dist = (v->side_dist_x - v->delta_dist_x);
 	else
 		v->perp_wall_dist = (v->side_dist_y - v->delta_dist_y);
+	if (v->perp_wall_dist < 0.01)
+		v->perp_wall_dist = 0.01;
 	v->line_height = (int)(DEFSCREENHEIGHT / v->perp_wall_dist);
+	if (v->line_height > DEFSCREENHEIGHT * 10)
+		v->line_height = DEFSCREENHEIGHT * 10;
 	v->draw_start = -v->line_height / 2 + DEFSCREENHEIGHT / 2;
 	if (v->draw_start < 0)
 		v->draw_start = 0;
 	v->draw_end = v->line_height / 2 + DEFSCREENHEIGHT / 2;
 	if (v->draw_end >= DEFSCREENHEIGHT)
-		v->draw_end = DEFSCREENHEIGHT - 1;
+		v->draw_end = DEFSCREENHEIGHT - 1 ;
 }
 
 static void	calculate_side_distance(t_raycaster *r, t_raycaster_var *v)
@@ -137,30 +141,43 @@ static void	draw_floor_ceiling(int x, t_raycaster *r, t_raycaster_var *v)
 	int	y;
 
 	y = 0;
-	while (y < v->draw_start)
+	while (y < v->draw_start + r->pitch)
 	{
-		set_pixel(x, y, r->ceiling_color, r);
+		if (y >= 0 && y < DEFSCREENHEIGHT)
+			set_pixel(x, y, r->ceiling_color, r);
 		y++;
 	}
-	y = v->draw_end;
+	y = v->draw_end + r->pitch;
 	while (y < DEFSCREENHEIGHT)
 	{
-		set_pixel(x, y, r->floor_color, r);
+		if (y >= 0 && y < DEFSCREENHEIGHT)
+			set_pixel(x, y, r->floor_color, r);
 		y++;
 	}
 }
 
-static void	calculate_texture_x(t_raycaster *r, t_raycaster_var *v, int *tex_x)
+static void calculate_texture_x(t_raycaster *r, t_raycaster_var *v, int *tex_x)
 {
-	double	wall_x;
+    double wall_x;
+    if (v->side == 0)
+        wall_x = r->pos_y + v->perp_wall_dist * v->ray_dir_y;
+    else
+        wall_x = r->pos_x + v->perp_wall_dist * v->ray_dir_x;
+    wall_x -= floor(wall_x);
+    *tex_x = (int)(wall_x * (double)TEXTURESIZE);
+    if (v->side == 0 && v->ray_dir_x < 0)
+        *tex_x = TEXTURESIZE - *tex_x - 1;
+    if (v->side == 1 && v->ray_dir_y > 0)
+        *tex_x = TEXTURESIZE - *tex_x - 1;
 
-	if (v->side == 0)
-		wall_x = r->pos_y + v->perp_wall_dist * v->ray_dir_y;
-	else
-		wall_x = r->pos_x + v->perp_wall_dist * v->ray_dir_x;
-	wall_x -= floor(wall_x);
-	*tex_x = (int)(wall_x * (double)TEXTURESIZE);
+    if (*tex_x < 0)
+        *tex_x = 0;
+    if (*tex_x >= TEXTURESIZE)
+        *tex_x = TEXTURESIZE - 1;
 }
+
+
+
 
 static void	draw_walls(t_raycaster *r, int x, t_raycaster_var *v, void *texture)
 {
@@ -171,15 +188,18 @@ static void	draw_walls(t_raycaster *r, int x, t_raycaster_var *v, void *texture)
 	unsigned int	color;
 
 	calculate_texture_x(r, v, &tex_x);
-	y = v->draw_start;
-	while (y < v->draw_end)
+	y = v->draw_start + r->pitch;
+	while (y < v->draw_end + r->pitch)
 	{
-		d = y * 256 - DEFSCREENHEIGHT * 128 + v->line_height * 128;
-		tex_y = ((d * TEXTURESIZE) / v->line_height) / 256;
-		color = get_texture_pixel(texture, tex_x, tex_y);
-		if (v->side == 1)
-			color = (color >> 1) & 0x7F7F7F;
-		set_pixel(x, y, color, r);
+		if (y >= 0 && y < DEFSCREENHEIGHT)
+		{
+			d = (y - r->pitch) * 256 - DEFSCREENHEIGHT * 128 + v->line_height * 128;
+			tex_y = ((d * TEXTURESIZE) / v->line_height) / 256;
+			color = get_texture_pixel(texture, tex_x, tex_y);
+			if (v->side == 1)
+				color = (color >> 1) & 0x7F7F7F;
+			set_pixel(x, y, color, r);
+		}
 		y++;
 	}
 }

@@ -152,11 +152,11 @@ static void	apply_strafe_left(t_raycaster *r, t_map *map)
 int	mouse_move(int x, int y, t_cub3d *cub3d)
 {
 	int			delta_x;
+	int			delta_y;
 	double		rotation;
 	t_raycaster	*r;
 	t_window	*w;
 
-	(void)y;
 	r = cub3d->raycaster;
 	w = cub3d->window;
 	delta_x = x - w->center_x;
@@ -164,8 +164,18 @@ int	mouse_move(int x, int y, t_cub3d *cub3d)
 	{
 		rotation = delta_x * 0.002;
 		apply_rotation(r, rotation);
-		mlx_mouse_move(w->mlx, w->win, w->center_x, w->center_y);
 	}
+	delta_y = y - w->center_y;
+	if (delta_y != 0)
+	{
+		r->pitch -= delta_y;
+		if (r->pitch > DEFSCREENHEIGHT / 2)
+			r->pitch = DEFSCREENHEIGHT / 2;
+		if (r->pitch < -DEFSCREENHEIGHT / 2)
+			r->pitch = -DEFSCREENHEIGHT / 2;
+	}
+	if (delta_x != 0 || delta_y != 0)
+		mlx_mouse_move(w->mlx, w->win, w->center_x, w->center_y);
 	return (0);
 }
 

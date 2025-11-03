@@ -83,6 +83,7 @@ typedef struct s_raycaster
 	int				bits_per_pixel;
 	int				line_length;
 	int				endian;
+	int     		pitch;
 	unsigned int	ceiling_color;
 	unsigned int	floor_color;
 	double			dir_x;
