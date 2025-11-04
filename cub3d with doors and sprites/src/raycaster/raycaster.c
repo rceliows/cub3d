@@ -45,7 +45,8 @@ static void	perform_dda(t_map *map, t_raycaster_var *v)
 			v->map_y += v->step_y;
 			v->side = 1;
 		}
-		if (map->world_map[v->map_x][v->map_y] > 0)
+		if (map->world_map[v->map_x][v->map_y] == 1 ||
+			map->world_map[v->map_x][v->map_y] == 2)
 			hit = 1;
 	}
 }
@@ -67,6 +68,7 @@ static void	calculate_line(t_raycaster_var *v, t_raycaster *r)
 	v->draw_end = v->line_height / 2 + DEFSCREENHEIGHT / 2 + r->pitch;
 	if (v->draw_end >= DEFSCREENHEIGHT)
 		v->draw_end = DEFSCREENHEIGHT - 1 ;
+	v->z_buffer[v->x] = v->perp_wall_dist;
 }
 
 static void	calculate_side_distance(t_raycaster *r, t_raycaster_var *v)
@@ -93,9 +95,9 @@ static void	calculate_side_distance(t_raycaster *r, t_raycaster_var *v)
 	}
 }
 
-static void	calculate_ray(int x, t_raycaster *r, t_raycaster_var *v)
+static void	calculate_ray(t_raycaster *r, t_raycaster_var *v)
 {
-	v->camera_x = 2 * x / (double)DEFSCREENWIDTH - 1;
+	v->camera_x = 2 * v->x / (double)DEFSCREENWIDTH - 1;
 	v->ray_dir_x = r->dir_x + r->plane_x * v->camera_x;
 	v->ray_dir_y = r->dir_y + r->plane_y * v->camera_x;
 	v->map_x = (int)(r->pos_x);
@@ -148,7 +150,7 @@ int	get_texture_pixel(void *texture, t_raycaster_var *v,
 	return (*(unsigned int *)pixel_ptr);
 }
 
-static void	draw_floor_ceiling(int x, t_raycaster *r, t_raycaster_var *v)
+static void	draw_floor_ceiling(t_raycaster *r, t_raycaster_var *v)
 {
 	int	y;
 
@@ -156,14 +158,14 @@ static void	draw_floor_ceiling(int x, t_raycaster *r, t_raycaster_var *v)
 	while (y < v->draw_start)
 	{
 		if (y >= 0 && y < DEFSCREENHEIGHT)
-			set_pixel(x, y, r->ceiling_color, r);
+			set_pixel(v->x, y, r->ceiling_color, r);
 		y++;
 	}
 	y = v->draw_end;
 	while (y < DEFSCREENHEIGHT)
 	{
 		if (y >= 0 && y < DEFSCREENHEIGHT)
-			set_pixel(x, y, r->floor_color, r);
+			set_pixel(v->x, y, r->floor_color, r);
 		y++;
 	}
 }
@@ -188,7 +190,7 @@ static void	calculate_texture_x(t_raycaster *r, t_raycaster_var *v)
 		v->tex_x = TEXTURESIZE - 1;
 }
 
-static void	draw_walls(t_raycaster *r, int x, t_raycaster_var *v, void *texture)
+static void	draw_walls(t_raycaster *r, t_raycaster_var *v, void *texture)
 {
 	int				y;
 	int				d;
@@ -210,36 +212,49 @@ static void	draw_walls(t_raycaster *r, int x, t_raycaster_var *v, void *texture)
 			color = get_texture_pixel(texture, v, v->tex_width, v->tex_height);
 			if (v->side == 1)
 				color = (color >> 1) & 0x7F7F7F;
-			set_pixel(x, y, color, r);
+			set_pixel(v->x, y, color, r);
 		}
 		y++;
 	}
 }
 
-static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v, t_map *map)
+static int	check_direction(t_raycaster_var *v)
 {
-	int		direction;
-
-	draw_floor_ceiling(x, r, v);
 	if (v->side == 0)
 	{
 		if (v->step_x == -1)
-			direction = 2;
+			return (2);
 		else
-			direction = 3;
+			return (3);
 	}
 	else
 	{
 		if (v->step_y == -1)
-			direction = 0;
+			return (0);
 		else
-			direction = 1;
+			return (1);
 	}
-	mlx_get_data_addr(map->texture[direction],
-		&v->tex_width, &v->tex_width, &v->tex_width);
+}
+
+static void	draw_image(t_raycaster *r, t_raycaster_var *v, t_map *map)
+{
+	int		direction;
+	int		cell_type;
+
+	draw_floor_ceiling(r, v);
+	cell_type = map->world_map[v->map_x][v->map_y];
+	if (cell_type == 2)
+	{
+		direction = 4;
+		v->tex_width = map->texture_width[4];
+		v->tex_height = map->texture_height[4];
+		draw_walls(r, v, map->texture[4]);
+		return ;
+	}
+	direction = check_direction(v);
 	v->tex_width = map->texture_width[direction];
 	v->tex_height = map->texture_height[direction];
-	draw_walls(r, x, v, map->texture[direction]);
+	draw_walls(r, v, map->texture[direction]);
 }
 
 void	paint_sector(char *pixel_ptr, int line_length,
@@ -262,30 +277,43 @@ void	paint_sector(char *pixel_ptr, int line_length,
 	}
 }
 
-static void	display_minimap(t_raycaster *r, t_map *map)
+static void	display_minimap_row(t_raycaster *r,
+			t_map *map, int i, int pixel_size)
 {
 	char	*pixel_ptr;
-	int		pixel_size;
 	int		crn_dst;
-	int		i;
 	int		j;
 
-	pixel_size = r->bits_per_pixel / 8;
+	j = 0;
 	crn_dst = 10;
+	while (j < MAPWIDTH)
+	{
+		pixel_ptr = r->img_data + (crn_dst + i * MINIMAPSIZE)
+			* r->line_length + (crn_dst + j * MINIMAPSIZE) * pixel_size;
+		if (i == (int)(r->pos_x) && j == (int)(r->pos_y))
+			paint_sector(pixel_ptr, r->line_length, pixel_size, 0xFF0000);
+		else if (map->world_map[i][j] == 1)
+			paint_sector(pixel_ptr, r->line_length, pixel_size, 0xFFFFFF);
+		else if (map->world_map[i][j] == 2)
+			paint_sector(pixel_ptr, r->line_length, pixel_size, 0x8B4513);
+		else if (map->world_map[i][j] == 3)
+			paint_sector(pixel_ptr, r->line_length, pixel_size, 0x00FF00);
+		else if (map->world_map[i][j] == 4)
+			paint_sector(pixel_ptr, r->line_length, pixel_size, 0xFFFF00);
+		j++;
+	}
+}
+
+static void	display_minimap(t_raycaster *r, t_map *map)
+{
+	int	pixel_size;
+	int	i;
+
+	pixel_size = r->bits_per_pixel / 8;
 	i = 0;
 	while (i < MAPHEIGHT)
 	{
-		j = 0;
-		while (j < MAPWIDTH)
-		{
-			pixel_ptr = r->img_data + (crn_dst + i * MINIMAPSIZE)
-				* r->line_length + (crn_dst + j * MINIMAPSIZE) * pixel_size;
-			if (i == (int)(r->pos_x) && j == (int)(r->pos_y))
-				paint_sector(pixel_ptr, r->line_length, pixel_size, 0xFF0000);
-			if (map->world_map[i][j] == 1)
-				paint_sector(pixel_ptr, r->line_length, pixel_size, 0xFFFFFF);
-			j++;
-		}
+		display_minimap_row(r, map, i, pixel_size);
 		i++;
 	}
 }
@@ -322,7 +350,6 @@ static void	bonus_elements(t_raycaster *r, t_window *w, t_map *map)
 int	raycasting_function(t_cub3d *cub3d)
 {
 	t_raycaster_var	v;
-	int				x;
 	t_raycaster		*r;
 	t_window		*w;
 	t_map			*map;
@@ -331,17 +358,19 @@ int	raycasting_function(t_cub3d *cub3d)
 	w = cub3d->window;
 	map = cub3d->map;
 	update_time_and_speed(r);
+	update_doors(r, map);
 	process_movement(r, map);
-	x = 0;
-	while (x < DEFSCREENWIDTH)
+	v.x = 0;
+	while (v.x < DEFSCREENWIDTH)
 	{
-		calculate_ray(x, r, &v);
+		calculate_ray(r, &v);
 		calculate_side_distance(r, &v);
 		perform_dda(map, &v);
 		calculate_line(&v, r);
-		draw_image(x, r, &v, map);
-		x++;
+		draw_image(r, &v, map);
+		v.x++;
 	}
+	render_sprites(cub3d, v.z_buffer);
 	mlx_put_image_to_window(w->mlx, w->win, w->img, 0, 0);
 	bonus_elements(r, w, map);
 	return (0);

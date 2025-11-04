@@ -120,10 +120,21 @@ t_map	*init_map(t_window *w)
 
 static void	cleanup_map_bonus(t_map *map, t_window *w)
 {
+	int	i;
+
 	if (map->texture[4])
 		mlx_destroy_image(w->mlx, map->texture[4]);
 	if (map->texture[5])
 		mlx_destroy_image(w->mlx, map->texture[5]);
+	i = 0;
+	while (i < 3)
+	{
+		if (map->animated_sprite_frames[i])
+			mlx_destroy_image(w->mlx, map->animated_sprite_frames[i]);
+		if (map->animated_sprite_path[i])
+			free(map->animated_sprite_path[i]);
+		i++;
+	}
 	if (map->door_path)
 		free(map->door_path);
 	if (map->sprite_path)

@@ -27,5 +27,6 @@ t_keys	*init_keys(void)
 	k->right = 0;
 	k->minimap = 0;
 	k->fps = 0;
+	k->e = 0;
 	return (k);
 }

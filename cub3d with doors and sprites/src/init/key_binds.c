@@ -45,6 +45,8 @@ static int	key_press_movement(int keycode, t_raycaster *r)
 		r->keys.left = 1;
 	else if (keycode == 65363)
 		r->keys.right = 1;
+	else if (keycode == 101)
+		r->keys.e = 1;
 	else
 		return (0);
 	return (1);
@@ -58,7 +60,12 @@ int	key_press(int keycode, t_cub3d *cub3d)
 	if (key_press_bonus(keycode, r))
 		return (0);
 	if (key_press_movement(keycode, r))
+	{
+		// Handle door toggle on 'e' press
+		if (keycode == 101)
+			toggle_door(r, cub3d->map);
 		return (0);
+	}
 	if (keycode == 65307)
 	{
 		printf("ESC pressed, exiting...\n");
@@ -82,6 +89,8 @@ static int	key_release_movement(int keycode, t_raycaster *r)
 		r->keys.left = 0;
 	else if (keycode == 65363)
 		r->keys.right = 0;
+	else if (keycode == 101)
+		r->keys.e = 0;
 	else
 		return (0);
 	return (1);
@@ -112,40 +121,72 @@ static void	apply_rotation(t_raycaster *r, double angle)
 static void	apply_forward(t_raycaster *r, t_map *map)
 {
 	if (map->world_map[(int)(r->pos_x + r->dir_x * r->move_speed)]
-		[(int)(r->pos_y)] == 0)
+		[(int)(r->pos_y)] == 0 ||
+		map->world_map[(int)(r->pos_x + r->dir_x * r->move_speed)]
+		[(int)(r->pos_y)] == 3 ||
+		map->world_map[(int)(r->pos_x + r->dir_x * r->move_speed)]
+		[(int)(r->pos_y)] == 4)
 		r->pos_x += r->dir_x * r->move_speed;
 	if (map->world_map[(int)(r->pos_x)]
-		[(int)(r->pos_y + r->dir_y * r->move_speed)] == 0)
+		[(int)(r->pos_y + r->dir_y * r->move_speed)] == 0 ||
+		map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y + r->dir_y * r->move_speed)] == 3 ||
+		map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y + r->dir_y * r->move_speed)] == 4)
 		r->pos_y += r->dir_y * r->move_speed;
 }
 
 static void	apply_backward(t_raycaster *r, t_map *map)
 {
 	if (map->world_map[(int)(r->pos_x - r->dir_x * r->move_speed)]
-		[(int)(r->pos_y)] == 0)
+		[(int)(r->pos_y)] == 0 ||
+		map->world_map[(int)(r->pos_x - r->dir_x * r->move_speed)]
+		[(int)(r->pos_y)] == 3 ||
+		map->world_map[(int)(r->pos_x - r->dir_x * r->move_speed)]
+		[(int)(r->pos_y)] == 4)
 		r->pos_x -= r->dir_x * r->move_speed;
 	if (map->world_map[(int)(r->pos_x)]
-		[(int)(r->pos_y - r->dir_y * r->move_speed)] == 0)
+		[(int)(r->pos_y - r->dir_y * r->move_speed)] == 0 ||
+		map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y - r->dir_y * r->move_speed)] == 3 ||
+		map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y - r->dir_y * r->move_speed)] == 4)
 		r->pos_y -= r->dir_y * r->move_speed;
 }
 
 static void	apply_strafe_right(t_raycaster *r, t_map *map)
 {
 	if (map->world_map[(int)(r->pos_x - r->dir_y * r->move_speed)]
-		[(int)(r->pos_y)] == 0)
+		[(int)(r->pos_y)] == 0 ||
+		map->world_map[(int)(r->pos_x - r->dir_y * r->move_speed)]
+		[(int)(r->pos_y)] == 3 ||
+		map->world_map[(int)(r->pos_x - r->dir_y * r->move_speed)]
+		[(int)(r->pos_y)] == 4)
 		r->pos_x -= r->dir_y * r->move_speed;
 	if (map->world_map[(int)(r->pos_x)]
-		[(int)(r->pos_y + r->dir_x * r->move_speed)] == 0)
+		[(int)(r->pos_y + r->dir_x * r->move_speed)] == 0 ||
+		map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y + r->dir_x * r->move_speed)] == 3 ||
+		map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y + r->dir_x * r->move_speed)] == 4)
 		r->pos_y += r->dir_x * r->move_speed;
 }
 
 static void	apply_strafe_left(t_raycaster *r, t_map *map)
 {
 	if (map->world_map[(int)(r->pos_x + r->dir_y * r->move_speed)]
-		[(int)(r->pos_y)] == 0)
+		[(int)(r->pos_y)] == 0 ||
+		map->world_map[(int)(r->pos_x + r->dir_y * r->move_speed)]
+		[(int)(r->pos_y)] == 3 ||
+		map->world_map[(int)(r->pos_x + r->dir_y * r->move_speed)]
+		[(int)(r->pos_y)] == 4)
 		r->pos_x += r->dir_y * r->move_speed;
 	if (map->world_map[(int)(r->pos_x)]
-		[(int)(r->pos_y - r->dir_x * r->move_speed)] == 0)
+		[(int)(r->pos_y - r->dir_x * r->move_speed)] == 0 ||
+		map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y - r->dir_x * r->move_speed)] == 3 ||
+		map->world_map[(int)(r->pos_x)]
+		[(int)(r->pos_y - r->dir_x * r->move_speed)] == 4)
 		r->pos_y -= r->dir_x * r->move_speed;
 }
 

@@ -27,6 +27,8 @@ INIT			= $(SRC_DIR)init/init_keys.c		\
 			$(SRC_DIR)init/key_binds.c		\
 
 RAYCASTER		=$(SRC_DIR)raycaster/raycaster.c	\
+				$(SRC_DIR)raycaster/door_rendering.c	\
+				$(SRC_DIR)raycaster/sprite_rendering.c	\
 
 # Concatenate all source files
 SRCS 			= $(CUB3D) $(INIT) $(RAYCASTER) 

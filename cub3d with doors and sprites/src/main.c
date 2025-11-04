@@ -27,6 +27,7 @@ static void	init_cub3d(t_cub3d *cub3d, int direction)
 	cub3d->map = init_map(cub3d->window);
 	if (!cub3d->map)
 		error_exit(cub3d);
+	init_doors(cub3d->map);
 	cub3d->raycaster = init_raycaster(cub3d->window, cub3d->map, direction);
 	if (!cub3d->raycaster)
 		error_exit(cub3d);

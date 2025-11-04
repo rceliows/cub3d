@@ -48,6 +48,7 @@ typedef struct s_keys
 	int	right;
 	int	minimap;
 	int	fps;
+	int	e;
 }	t_keys;
 
 typedef struct s_window
@@ -72,7 +73,7 @@ typedef struct s_map
 	void		*texture[6];
 	int			texture_width[6];
 	int			texture_height[6];
-	int			animated_sprite_frames[3];
+	void		*animated_sprite_frames[3];
 	int			animated_sprite_width[3];
 	int			animated_sprite_height[3];
 	void		*sprite_image;
@@ -112,16 +113,18 @@ typedef struct s_raycaster
 
 typedef struct s_raycaster_var
 {
+	double			z_buffer[DEFSCREENWIDTH];
 	double			camera_x;
 	double			ray_dir_x;
 	double			ray_dir_y;
-	int				map_x;
-	int				map_y;
 	double			side_dist_x;
 	double			side_dist_y;
 	double			delta_dist_x;
 	double			delta_dist_y;
 	double			perp_wall_dist;
+	int				x;
+	int				map_x;
+	int				map_y;
 	int				tex_width;
 	int				tex_height;
 	int				tex_x;
@@ -136,6 +139,31 @@ typedef struct s_raycaster_var
 	int				draw_end;
 }	t_raycaster_var;
 
+typedef struct s_sprite_data
+{
+	int		count;
+	double	*pos_x;
+	double	*pos_y;
+	int		*type;
+	int		*order;
+	double	*distance;
+}	t_sprite_data;
+
+typedef struct s_door
+{
+	int		x;
+	int		y;
+	int		state;
+	double	timer;
+}	t_door;
+
+typedef struct s_door_manager
+{
+	t_door	*doors;
+	int		count;
+	int		capacity;
+}	t_door_manager;
+
 typedef struct s_cub3d
 {
 	t_keys		*keys;
@@ -146,6 +174,18 @@ typedef struct s_cub3d
 
 /* Raycaster */
 int			raycasting_function(t_cub3d *cub3d);
+void		set_pixel(int x, int y, int color, t_raycaster *r);
+
+/* Sprite rendering */
+void		render_sprites(t_cub3d *cub3d, double *z_buffer);
+
+/* Door system */
+void		init_doors(t_map *map);
+void		cleanup_doors(void);
+void		toggle_door(t_raycaster *r, t_map *map);
+void		update_doors(t_raycaster *r, t_map *map);
+int			is_door(t_map *map, int x, int y);
+int			get_door_state(int x, int y);
 
 /* Key binds */
 void		prep_hooks(t_cub3d *cub3d);
