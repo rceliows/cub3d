@@ -1,1 +1,0 @@
-Input detection, so the movement is smoother, need to continue changing position while key is kept pushed

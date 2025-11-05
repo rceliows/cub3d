@@ -32,7 +32,8 @@ static int	malloc_sprites(t_sprite_data *sprites)
 	return (1);
 }
 
-static void	init_sprites(t_map *map, t_raycaster *r, t_sprite_data *sprites, int *idx)
+static void	init_sprites(t_map *map, t_raycaster *r,
+			t_sprite_data *sprites, int *idx)
 {
 	int	i;
 	int	j;
@@ -50,9 +51,9 @@ static void	init_sprites(t_map *map, t_raycaster *r, t_sprite_data *sprites, int
 				sprites->type[*idx] = map->world_map[i][j];
 				sprites->order[*idx] = *idx;
 				sprites->distance[*idx] = ((r->pos_x - sprites->pos_x[*idx])
-					* (r->pos_x - sprites->pos_x[*idx])
-					+ (r->pos_y - sprites->pos_y[*idx])
-					* (r->pos_y - sprites->pos_y[*idx]));
+						* (r->pos_x - sprites->pos_x[*idx])
+						+ (r->pos_y - sprites->pos_y[*idx])
+						* (r->pos_y - sprites->pos_y[*idx]));
 				(*idx)++;
 			}
 			j++;
@@ -80,13 +81,12 @@ int	collect_sprites(t_map *map, t_raycaster *r, t_sprite_data *sprites)
 		}
 		i++;
 	}
-	if (!!malloc_sprites(sprites))
+	if (!malloc_sprites(sprites))
 		return (0);
 	idx = 0;
 	init_sprites(map, r, sprites, &idx);
 	return (1);
 }
-
 
 void	cleanup_sprites(t_sprite_data *sprites)
 {

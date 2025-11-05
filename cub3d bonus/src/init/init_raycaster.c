@@ -62,6 +62,5 @@ t_raycaster	*init_raycaster(t_window *w, t_map *map, int direction)
 	r->frame_time = 0.016;
 	r->move_speed = r->base_move_speed * r->frame_time;
 	r->rot_speed = r->base_rot_speed * r->frame_time;
-	r->pitch = 0;
 	return (r);
 }

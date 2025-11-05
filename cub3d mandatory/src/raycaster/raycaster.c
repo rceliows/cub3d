@@ -12,7 +12,33 @@
 
 #include "../inc/cub3d.h"
 
-static void	draw_floor_ceiling(t_raycaster *r, t_raycaster_var *v)
+int	get_texture_pixel(void *texture, t_raycaster_var *v,
+		int tex_width, int tex_height)
+{
+	char	*img_data;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+	char	*pixel_ptr;
+
+	img_data = mlx_get_data_addr(texture,
+			&bits_per_pixel, &line_length, &endian);
+	v->actual_x = (v->tex_x * tex_width) / TEXTURESIZE;
+	v->actual_y = (v->tex_y * tex_height) / TEXTURESIZE;
+	if (v->actual_x < 0)
+		v->actual_x = 0;
+	if (v->actual_x >= tex_width)
+		v->actual_x = tex_width - 1;
+	if (v->actual_y < 0)
+		v->actual_y = 0;
+	if (v->actual_y >= tex_height)
+		v->actual_y = tex_height - 1;
+	pixel_ptr = img_data + (v->actual_y * line_length)
+		+ (v->actual_x * (bits_per_pixel / 8));
+	return (*(unsigned int *)pixel_ptr);
+}
+
+static void	draw_floor_ceiling(int x, t_raycaster *r, t_raycaster_var *v)
 {
 	int	y;
 
@@ -20,19 +46,19 @@ static void	draw_floor_ceiling(t_raycaster *r, t_raycaster_var *v)
 	while (y < v->draw_start)
 	{
 		if (y >= 0 && y < DEFSCREENHEIGHT)
-			set_pixel(v->x, y, r->ceiling_color, r);
+			set_pixel(x, y, r->ceiling_color, r);
 		y++;
 	}
 	y = v->draw_end;
 	while (y < DEFSCREENHEIGHT)
 	{
 		if (y >= 0 && y < DEFSCREENHEIGHT)
-			set_pixel(v->x, y, r->floor_color, r);
+			set_pixel(x, y, r->floor_color, r);
 		y++;
 	}
 }
 
-static void	draw_walls(t_raycaster *r, t_raycaster_var *v, void *texture)
+static void	draw_walls(t_raycaster *r, int x, t_raycaster_var *v, void *texture)
 {
 	int				y;
 	int				d;
@@ -54,54 +80,42 @@ static void	draw_walls(t_raycaster *r, t_raycaster_var *v, void *texture)
 			color = get_texture_pixel(texture, v, v->tex_width, v->tex_height);
 			if (v->side == 1)
 				color = (color >> 1) & 0x7F7F7F;
-			set_pixel(v->x, y, color, r);
+			set_pixel(x, y, color, r);
 		}
 		y++;
 	}
 }
 
-static int	check_direction(t_raycaster_var *v)
+static void	draw_image(int x, t_raycaster *r, t_raycaster_var *v, t_map *map)
 {
+	int		direction;
+
+	draw_floor_ceiling(x, r, v);
 	if (v->side == 0)
 	{
 		if (v->step_x == -1)
-			return (2);
+			direction = 2;
 		else
-			return (3);
+			direction = 3;
 	}
 	else
 	{
 		if (v->step_y == -1)
-			return (0);
+			direction = 0;
 		else
-			return (1);
+			direction = 1;
 	}
-}
-
-static void	draw_image(t_raycaster *r, t_raycaster_var *v, t_map *map)
-{
-	int		direction;
-	int		cell_type;
-
-	draw_floor_ceiling(r, v);
-	cell_type = map->world_map[v->map_x][v->map_y];
-	if (cell_type == 2)
-	{
-		direction = 4;
-		v->tex_width = map->texture_width[4];
-		v->tex_height = map->texture_height[4];
-		draw_walls(r, v, map->texture[4]);
-		return ;
-	}
-	direction = check_direction(v);
+	mlx_get_data_addr(map->texture[direction],
+		&v->tex_width, &v->tex_width, &v->tex_width);
 	v->tex_width = map->texture_width[direction];
 	v->tex_height = map->texture_height[direction];
-	draw_walls(r, v, map->texture[direction]);
+	draw_walls(r, x, v, map->texture[direction]);
 }
 
 int	raycasting_function(t_cub3d *cub3d)
 {
 	t_raycaster_var	v;
+	int				x;
 	t_raycaster		*r;
 	t_window		*w;
 	t_map			*map;
@@ -110,19 +124,17 @@ int	raycasting_function(t_cub3d *cub3d)
 	w = cub3d->window;
 	map = cub3d->map;
 	update_time_and_speed(r);
-	update_doors(r, map);
 	process_movement(r, map);
-	v.x = 0;
-	while (v.x < DEFSCREENWIDTH)
+	x = 0;
+	while (x < DEFSCREENWIDTH)
 	{
-		calculate_ray(r, &v);
+		calculate_ray(x, r, &v);
 		calculate_side_distance(r, &v);
 		perform_dda(map, &v);
 		calculate_line(&v, r);
-		draw_image(r, &v, map);
-		v.x++;
+		draw_image(x, r, &v, map);
+		x++;
 	}
-	render_sprites(cub3d, v.z_buffer);
 	mlx_put_image_to_window(w->mlx, w->win, w->img, 0, 0);
 	bonus_elements(r, w, map);
 	return (0);

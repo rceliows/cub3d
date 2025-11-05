@@ -69,13 +69,13 @@ typedef struct s_map
 	char		*w_xpm_path;
 	char		*door_path;
 	char		*sprite_path;
-	char		*animated_sprite_path[3];
 	void		*texture[6];
 	int			texture_width[6];
 	int			texture_height[6];
-	void		*animated_sprite_frames[3];
-	int			animated_sprite_width[3];
-	int			animated_sprite_height[3];
+	char		*animated_sprite_path[4];
+	void		*animated_sprite_frames[4];
+	int			animated_sprite_width[4];
+	int			animated_sprite_height[4];
 	void		*sprite_image;
 	void		*door_image;
 	int			ceiling_color;
@@ -90,7 +90,7 @@ typedef struct s_raycaster
 	int				bits_per_pixel;
 	int				line_length;
 	int				endian;
-	int     		pitch;
+	int				pitch;
 	unsigned int	ceiling_color;
 	unsigned int	floor_color;
 	double			dir_x;
@@ -128,7 +128,7 @@ typedef struct s_raycaster_var
 	int				tex_width;
 	int				tex_height;
 	int				tex_x;
-	int 			tex_y;
+	int				tex_y;
 	int				actual_x;
 	int				actual_y;
 	int				step_x;
@@ -139,7 +139,7 @@ typedef struct s_raycaster_var
 	int				draw_end;
 }	t_raycaster_var;
 
-typedef struct	s_sprite_var
+typedef struct s_sprite_var
 {
 	double	sprite_x;
 	double	sprite_y;
@@ -195,40 +195,67 @@ typedef struct s_cub3d
 }	t_cub3d;
 
 /* Raycaster */
-int			raycasting_function(t_cub3d *cub3d);
-void		set_pixel(int x, int y, int color, t_raycaster *r);
+int				raycasting_function(t_cub3d *cub3d);
+void			update_time_and_speed(t_raycaster *r);
+void			perform_dda(t_map *map, t_raycaster_var *v);
+
+/* Raycaster calculations */
+void			calculate_line(t_raycaster_var *v, t_raycaster *r);
+void			calculate_side_distance(t_raycaster *r, t_raycaster_var *v);
+void			calculate_ray(t_raycaster *r, t_raycaster_var *v);
+void			calculate_texture_x(t_raycaster *r, t_raycaster_var *v);
 
 /* Sprite rendering */
-void		render_sprites(t_cub3d *cub3d, double *z_buffer);
+void			render_sprites(t_cub3d *cub3d, double *z_buffer);
+void			draw_sprite_stripe(t_cub3d *cub3d, t_sprite_data *sprites,
+					int sprite_idx, t_sprite_var *vs);
 
 /* Door system */
-void		init_doors(t_map *map);
-void		cleanup_doors(void);
-void		toggle_door(t_raycaster *r, t_map *map);
-void		update_doors(t_raycaster *r, t_map *map);
-int			is_door(t_map *map, int x, int y);
-int			get_door_state(int x, int y);
+t_door_manager	*get_door_manager(void);
+void			toggle_door(t_raycaster *r, t_map *map);
+void			update_doors(t_raycaster *r, t_map *map);
+int				is_door(t_map *map, int x, int y);
+int				get_door_state(int x, int y);
 
 /* Key binds */
-void		prep_hooks(t_cub3d *cub3d);
-int			key_press(int keycode, t_cub3d *cub3d);
-int			key_release(int keycode, t_cub3d *cub3d);
-int			handle_close(t_cub3d *cub3d);
-void		process_movement(t_raycaster *raycaster, t_map *map);
-int			mouse_move(int x, int y, t_cub3d *cub3d);
+void			prep_hooks(t_cub3d *cub3d);
+int				key_press(int keycode, t_cub3d *cub3d);
+int				key_press_bonus(int keycode, t_raycaster *r);
+int				key_press_movement(int keycode, t_raycaster *r);
+int				key_release(int keycode, t_cub3d *cub3d);
+int				key_release_movement(int keycode, t_raycaster *r);
+int				handle_close(t_cub3d *cub3d);
+void			process_movement(t_raycaster *raycaster, t_map *map);
+int				mouse_move(int x, int y, t_cub3d *cub3d);
 
 /* Inits and cleanups */
-t_keys		*init_keys(void);
-t_map		*init_map(t_window *w);
-t_window	*init_window(void);
-t_raycaster	*init_raycaster(t_window *w, t_map *map, int direction);
-int			collect_sprites(t_map *map, t_raycaster *r, t_sprite_data *sprites);
-void    	cleanup_map(t_map *map, t_window *w);
-void		cleanup_window(t_window *window);
-void		cleanup_cub3d(t_cub3d *cub3d);
-void		cleanup_sprites(t_sprite_data *sprites);
+t_keys			*init_keys(void);
+t_map			*init_map(t_window *w);
+t_window		*init_window(void);
+t_raycaster		*init_raycaster(t_window *w, t_map *map, int direction);
+int				init_doors(t_map *map);
+int				collect_sprites(t_map *map, t_raycaster *r,
+					t_sprite_data *sprites);
+void			cleanup_map(t_map *map, t_window *w);
+void			cleanup_window(t_window *window);
+void			cleanup_cub3d(t_cub3d *cub3d);
+void			cleanup_sprites(t_sprite_data *sprites);
+void			cleanup_doors(void);
+
+/* Movement */
+void			apply_rotation(t_raycaster *r, double angle);
+void			apply_forward(t_raycaster *r, t_map *map);
+void			apply_backward(t_raycaster *r, t_map *map);
+void			apply_strafe_right(t_raycaster *r, t_map *map);
+void			apply_strafe_left(t_raycaster *r, t_map *map);
 
 /* Utils */
-void		error_exit(t_cub3d *raycaster);
+void			error_exit(t_cub3d *raycaster);
+void			set_pixel(int x, int y, int color, t_raycaster *r);
+int				get_texture_pixel(void *texture, t_raycaster_var *v,
+					int tex_width, int tex_height);
+
+/* Bonus */
+void			bonus_elements(t_raycaster *r, t_window *w, t_map *map);
 
 #endif

@@ -17,32 +17,25 @@ AR			= ar rcs
 LIBS			= $(MINILIBX) -lX11 -lXext -lm
 
 # Source Files
-CUB3D			= $(SRC_DIR)main/main.c				\
-			$(SRC_DIR)main/utils.c				\
+CUB3D			= $(SRC_DIR)main/main.c			\
+			$(SRC_DIR)main/utils.c			\
 
-INIT			= $(SRC_DIR)init/init_keys.c			\
-			$(SRC_DIR)init/init_map.c			\
-			$(SRC_DIR)init/init_raycaster.c			\
-			$(SRC_DIR)init/init_window.c			\
-			$(SRC_DIR)init/init_sprites.c			\
-			$(SRC_DIR)init/init_doors.c			\
+INIT			= $(SRC_DIR)init/init_keys.c		\
+			$(SRC_DIR)init/init_map.c		\
+			$(SRC_DIR)init/init_raycaster.c		\
+			$(SRC_DIR)init/init_window.c		\
 
-RAYCASTER		=$(SRC_DIR)raycaster/raycaster.c		\
-			$(SRC_DIR)raycaster/extras.c			\
-			$(SRC_DIR)raycaster/calculations.c		\
-			$(SRC_DIR)raycaster/utils.c			\
+RAYCASTER		=$(SRC_DIR)raycaster/raycaster.c	\
+			$(SRC_DIR)raycaster/calculations.c	\
+			$(SRC_DIR)raycaster/extras.c		\
+			$(SRC_DIR)raycaster/utils.c		\
 
 MOVEMENT		=$(SRC_DIR)movement/handle_keys.c		\
-			$(SRC_DIR)movement/key_binds.c			\
-			$(SRC_DIR)movement/movement.c			\
-
-RENDERING		=$(SRC_DIR)rendering/door_rendering.c		\
-			$(SRC_DIR)rendering/door_rendering_utils.c	\
-			$(SRC_DIR)rendering/sprite_rendering.c		\
-			$(SRC_DIR)rendering/sprite_drawing.c		\
+			$(SRC_DIR)movement/key_binds.c		\
+			$(SRC_DIR)movement/movement.c		\
 
 # Concatenate all source files
-SRCS 			= $(CUB3D) $(INIT) $(RAYCASTER) $(MOVEMENT) $(RENDERING)
+SRCS 			= $(CUB3D) $(INIT) $(RAYCASTER) $(MOVEMENT)
 
 # Apply the pattern substitution to each source file in SRC and produce a corresponding list of object files in the OBJ_DIR
 OBJ 			= $(patsubst $(SRC_DIR)%.c,$(OBJ_DIR)%.o,$(SRCS))
