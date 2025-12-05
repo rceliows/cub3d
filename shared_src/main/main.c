@@ -25,7 +25,7 @@ static void	init_cub3d(t_cub3d *cub3d)
 		error_exit(cub3d);
 	if (!cub3d->map)
 		error_exit(cub3d);
-	apply_parsed_to_map(cub3d->map, &cub3d->game);
+	apply_parsed_to_map(cub3d->map, cub3d->game);
 	if (!extract_images(cub3d->map, cub3d->window))
 		error_exit(cub3d);
 	cub3d->raycaster = init_raycaster(cub3d->window, cub3d->map,
@@ -53,16 +53,17 @@ int	main(int ac, char **av)
 	if (!cub3d)
 		return (1);
 	ft_memset(cub3d, 0, sizeof(t_cub3d));
-	if (!verify_map(av[1], &cub3d->game))
+	cub3d->game = verify_map(av[1]);
+	if (!cub3d->game)
 	{
-		free(cub3d);
+		cleanup_cub3d(cub3d);
 		return (1);
 	}
-	get_map_size(cub3d->game.map, &height, &width);
+	get_map_size(cub3d->game->map, &height, &width);
 	cub3d->map = init_map(height, width);
 	if (!cub3d->map)
 	{
-		free(cub3d);
+		cleanup_cub3d(cub3d);
 		return (1);
 	}
 	init_cub3d(cub3d);

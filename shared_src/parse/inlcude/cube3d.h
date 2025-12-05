@@ -9,10 +9,10 @@
 typedef struct s_data
 {
 	char	**map;
-	char	*North_texture;
-	char	*South_texture;
-	char	*West_texture;
-	char	*East_texture;
+	char	*north_texture;
+	char	*south_texture;
+	char	*west_texture;
+	char	*east_texture;
 	int		floor[3];
 	int		ceiling[3];
 	int		have_floor;

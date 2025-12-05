@@ -45,7 +45,10 @@ void	perform_dda(t_map *map, t_raycaster_var *v)
 			v->map_y += v->step_y;
 			v->side = 1;
 		}
-		if (map->world_map[v->map_x][v->map_y] > 0)
+		if (v->map_x < 0 || v->map_x >= map->map_height 
+			|| v->map_y < 0 || v->map_y >= map->map_width)
+			hit = 1;
+		else if (map->world_map[v->map_x][v->map_y] > 0)
 			hit = 1;
 	}
 }

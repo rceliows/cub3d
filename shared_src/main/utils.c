@@ -12,10 +12,36 @@
 
 #include "../inc/cub3d.h"
 
+static void	clenup_game(t_data *game)
+{
+	int	i;
+
+	i = 0;
+	if (game->map)
+	{
+		while(game->map[i])
+		{
+			free(game->map[i]);
+			i++;
+		}
+		free(game->map);
+	}
+	if (game->north_texture)
+		free(game->north_texture);
+	if (game->south_texture)
+		free(game->south_texture);
+	if (game->west_texture)
+		free(game->west_texture);
+	if (game->east_texture)
+		free(game->east_texture);
+}
+
 void	cleanup_cub3d(t_cub3d *cub3d)
 {
 	if (!cub3d)
 		return ;
+	if (cub3d->game)
+		clenup_game(cub3d->game);
 	if (cub3d->map)
 	{
 		cleanup_map(cub3d->map, cub3d->window);

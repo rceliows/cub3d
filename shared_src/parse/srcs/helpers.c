@@ -18,10 +18,16 @@ void	rstrip_nl(char *s)
 {
 	int	i;
 
+	if (!s)
+		return ;
 	i = (int)ft_strlen(s);
 	while (i > 0 && (s[i - 1] == '\n' || s[i - 1] == '\r'))
-		s[i--] = '\0';
+	{
+		s[i - 1] = '\0';
+		i--;
+	}
 }
+
 
 void	ft_free_split(char **arr)
 {

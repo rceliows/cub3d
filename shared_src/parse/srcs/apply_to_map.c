@@ -53,14 +53,14 @@ void	apply_parsed_to_map(t_map *m, t_data *g)
 	int	x;
 	int	len;
 
-	m->n_xpm_path = ft_strdup(g->North_texture);
-	m->s_xpm_path = ft_strdup(g->South_texture);
-	m->w_xpm_path = ft_strdup(g->West_texture);
-	m->e_xpm_path = ft_strdup(g->East_texture);
+	m->n_xpm_path = ft_strdup(g->north_texture);
+	m->s_xpm_path = ft_strdup(g->south_texture);
+	m->w_xpm_path = ft_strdup(g->west_texture);
+	m->e_xpm_path = ft_strdup(g->east_texture);
 	m->floor_color = pack_rbg(g->floor);
 	m->ceiling_color = pack_rbg(g->ceiling);
-	m->start_position_x = (double)g->player_x;
-	m->start_position_y = (double)g->player_y;
+	m->start_position_x = (double)g->player_x + 0.5;
+	m->start_position_y = (double)g->player_y + 0.5;
 	m->start_direction = g->player_dir;
 	y = 0;
 	while (y < m->map_height)

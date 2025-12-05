@@ -46,8 +46,8 @@ t_raycaster	*init_raycaster(t_window *w, t_map *map, int direction)
 		return (NULL);
 	r->img_data = mlx_get_data_addr(w->img,
 			&r->bits_per_pixel, &r->line_length, &r->endian);
-	r->pos_x = map->start_position_x;
-	r->pos_y = map->start_position_y;
+	r->pos_x = map->start_position_y;
+	r->pos_y = map->start_position_x;
 	setup_direction(r, direction);
 	r->plane_x = -r->dir_y * 0.66;
 	r->plane_y = r->dir_x * 0.66;
