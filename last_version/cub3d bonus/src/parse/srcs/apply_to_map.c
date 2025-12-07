@@ -12,8 +12,6 @@
 
 #include "../inc/cub3d.h"
 
-#include "../inc/cub3d.h"
-
 void	get_map_size(char **map, int *height, int *width)
 {
 	int	h;
