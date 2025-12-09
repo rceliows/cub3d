@@ -237,7 +237,7 @@ The program provides detailed error messages for various validation failures:
 
 ### Memory Leaks from MinilibX
 
-Due to the use of `mlx_mouse_hide()` function from MinilibX, there are unavoidable memory leaks reported by Valgrind. These leaks originate from X11/Xcursor libraries used internally by MinilibX and are beyond the scope of this project to fix.
+Due to the use of the `mlx_mouse_hide()` function in MinilibX, Valgrind reports memory leaks that cannot be fixed within the scope of this project. These originate from the underlying X11/Xcursor libraries used internally by MinilibX. The use of `mlx_mouse_hide()` is a deliberate design choice to provide a better user experience.
 
 **Example Valgrind output:**
 ```
@@ -247,11 +247,12 @@ Due to the use of `mlx_mouse_hide()` function from MinilibX, there are unavoidab
 ```
 
 These leaks are:
-- **Not caused by the cub3D codebase** - They originate from MinilibX's interaction with X11
-- **System library related** - Specifically from `libX11.so` and `libXcursor.so`
-- **Unavoidable when using mouse functions** - There is no MinilibX function to properly clean up these allocations
+- **Not caused by the cub3D codebase** – they originate from MinilibX’s interaction with X11
+- **System-library related** – specifically from `libX11.so` and `libXcursor.so`
+- **Unavoidable when using mouse functions** – MinilibX does not provide a way to explicitly free these allocations
 
-**Note:** All memory allocated by the cub3D program itself is properly freed. The remaining "still reachable" blocks are internal to the graphics libraries and are automatically cleaned up by the operating system when the program exits.
+**Note:** All memory allocated by the cub3D program itself is properly freed. The remaining “still reachable” blocks belong to internal graphics libraries and are reclaimed by the operating system when the program exits. To verify this, you can comment out the call to `mlx_mouse_hide(cub3d->window->mlx, cub3d->window->win);` in `main.c` (around line 75); the reported leaks will disappear.
+
 
 ## Project Structure
 
