@@ -32,12 +32,38 @@ int	ft_isnumber(char *str)
 	return (1);
 }
 
+static int	validate_rgb_values(char **n_split, int rgb[3])
+{
+	int		i;
+	char	*trimmed;
+
+	i = 0;
+	while (i < 3)
+	{
+		trimmed = ft_strtrim(n_split[i], " \t");
+		if (!trimmed)
+			return (ft_free_split(n_split), 0);
+		if (!ft_isnumber(trimmed))
+		{
+			free(trimmed);
+			return (ft_free_split(n_split), 0);
+		}
+		rgb[i] = ft_atoi(trimmed);
+		free(trimmed);
+		if (rgb[i] < 0 || rgb[i] > 255)
+			return (ft_free_split(n_split), 0);
+		i++;
+	}
+	return (1);
+}
+
 int	parse_rgb(char *line, int rgb[3])
 {
 	char	**n_split;
 	int		i;
-	char	*trimmed;
 
+	if (!line || !*line)
+		return (0);
 	n_split = ft_split(line, ',');
 	if (!n_split)
 		return (0);
@@ -46,19 +72,10 @@ int	parse_rgb(char *line, int rgb[3])
 		i++;
 	if (i != 3)
 		return (ft_free_split(n_split), 0);
-	i = 0;
-	while (i < 3)
-	{
-		trimmed = ft_strtrim(n_split[i], " \t");
-		if (!trimmed || !ft_isnumber(trimmed))
-			return (ft_free_split(n_split), free(trimmed), 0);
-		rgb[i] = ft_atoi(trimmed);
-		free(trimmed);
-		if (rgb[i] < 0 || rgb[i] > 255)
-			return (ft_free_split(n_split), 0);
-		i++;
-	}
-	return (ft_free_split(n_split), 1);
+	if (!validate_rgb_values(n_split, rgb))
+		return (0);
+	ft_free_split(n_split);
+	return (1);
 }
 
 int	is_blank(const char *s)

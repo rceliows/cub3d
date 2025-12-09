@@ -74,7 +74,10 @@ void	render_sprites(t_cub3d *cub3d, double *z_buffer)
 
 	if (!collect_sprites(cub3d->map, cub3d->raycaster, &sprites)
 		|| sprites.count == 0)
+	{
+		cleanup_sprites(&sprites);
 		return ;
+	}
 	sort_sprites(&sprites);
 	vs.z_buffer = z_buffer;
 	i = 0;

@@ -48,12 +48,14 @@ static int	setup_game(t_cub3d *cub3d, t_data *game, char *path)
 {
 	int	height;
 	int	width;
+	int	exit_code;
 
-	if (!verify_map(path, game))
+	exit_code = verify_map(path, game);
+	if (exit_code != 0)
 	{
 		clenup_game(game);
 		cleanup_cub3d(cub3d);
-		return (0);
+		return (exit_code);
 	}
 	cub3d->game = game;
 	get_map_size(cub3d->game->map, &height, &width);
@@ -61,9 +63,9 @@ static int	setup_game(t_cub3d *cub3d, t_data *game, char *path)
 	if (!cub3d->map)
 	{
 		cleanup_cub3d(cub3d);
-		return (0);
+		return (1);
 	}
-	return (1);
+	return (0);
 }
 
 static void	run_game(t_cub3d *cub3d)
@@ -79,6 +81,7 @@ int	main(int ac, char **av)
 {
 	t_cub3d	*cub3d;
 	t_data	*game;
+	int		exit_code;
 
 	if (ac != 2)
 	{
@@ -87,8 +90,9 @@ int	main(int ac, char **av)
 	}
 	if (!alloc_structs(&cub3d, &game))
 		return (1);
-	if (!setup_game(cub3d, game, av[1]))
-		return (1);
+	exit_code = setup_game(cub3d, game, av[1]);
+	if (exit_code != 0)
+		return (exit_code);
 	run_game(cub3d);
 	cleanup_cub3d(cub3d);
 	return (0);

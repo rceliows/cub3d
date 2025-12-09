@@ -18,43 +18,44 @@ AR			= ar rcs
 LIBS			= $(MINILIBX) $(LIBFT) -lX11 -lXext -lm
 
 # Source Files
-CUB3D			= $(SRC_DIR)main/main.c				\
-			$(SRC_DIR)main/utils.c				\
-			$(SRC_DIR)main/utils_2.c			\
+CUB3D			= $(SRC_DIR)main/main.c \
+			$(SRC_DIR)main/utils.c \
+			$(SRC_DIR)main/utils_2.c \
 
-INIT			= $(SRC_DIR)init/init_keys.c			\
-			$(SRC_DIR)init/init_map.c			\
-			$(SRC_DIR)init/init_maps_utils.c		\
-			$(SRC_DIR)init/init_raycaster.c			\
-			$(SRC_DIR)init/init_window.c			\
-			$(SRC_DIR)init/init_sprites.c			\
-			$(SRC_DIR)init/init_doors.c			\
+INIT			= $(SRC_DIR)init/init_keys.c \
+			$(SRC_DIR)init/init_map.c \
+			$(SRC_DIR)init/init_maps_utils.c \
+			$(SRC_DIR)init/init_raycaster.c \
+			$(SRC_DIR)init/init_window.c \
+			$(SRC_DIR)init/init_sprites.c \
+			$(SRC_DIR)init/init_doors.c \
 
-RAYCASTER		=$(SRC_DIR)raycaster/raycaster.c		\
-			$(SRC_DIR)raycaster/extras.c			\
-			$(SRC_DIR)raycaster/calculations.c		\
-			$(SRC_DIR)raycaster/utils.c			\
+RAYCASTER		=$(SRC_DIR)raycaster/raycaster.c \
+			$(SRC_DIR)raycaster/extras.c \
+			$(SRC_DIR)raycaster/calculations.c \
+			$(SRC_DIR)raycaster/utils.c \
 
-MOVEMENT		=$(SRC_DIR)movement/handle_keys.c		\
-			$(SRC_DIR)movement/key_binds.c			\
-			$(SRC_DIR)movement/movement.c			\
+MOVEMENT		=$(SRC_DIR)movement/handle_keys.c \
+			$(SRC_DIR)movement/key_binds.c \
+			$(SRC_DIR)movement/movement.c \
 
-RENDERING		=$(SRC_DIR)rendering/door_rendering.c		\
-			$(SRC_DIR)rendering/door_rendering_utils.c	\
-			$(SRC_DIR)rendering/sprite_rendering.c		\
-			$(SRC_DIR)rendering/sprite_drawing.c		\
+RENDERING		=$(SRC_DIR)rendering/door_rendering.c \
+			$(SRC_DIR)rendering/door_rendering_utils.c \
+			$(SRC_DIR)rendering/sprite_rendering.c \
+			$(SRC_DIR)rendering/sprite_drawing.c \
 
-PARSE 			=$(SRC_DIR)parse/helpers.c			\
-			$(SRC_DIR)parse/map_validation.c		\
-			$(SRC_DIR)parse/map_validation_utils.c	\
-			$(SRC_DIR)parse/parseMap.c			\
-			$(SRC_DIR)parse/apply_to_map.c		\
-			$(SRC_DIR)parse/copy_map.c			\
-			$(SRC_DIR)parse/check_n_set_header.c	\
-			$(SRC_DIR)parse/parse_map_helpers.c	\
-			$(SRC_DIR)parse/verify.c			\
-			$(SRC_DIR)parse/player_pos.c		\
-			$(SRC_DIR)parse/parsemap_refraction.c	\
+PARSE 			=$(SRC_DIR)parse/helpers.c \
+			$(SRC_DIR)parse/map_validation.c \
+			$(SRC_DIR)parse/map_validation_utils.c \
+			$(SRC_DIR)parse/parse_map.c \
+			$(SRC_DIR)parse/apply_to_map.c \
+			$(SRC_DIR)parse/copy_map.c \
+			$(SRC_DIR)parse/check_n_set_header.c \
+			$(SRC_DIR)parse/check_n_set_header_utils.c \
+			$(SRC_DIR)parse/parse_map_helpers.c \
+			$(SRC_DIR)parse/verify.c \
+			$(SRC_DIR)parse/player_pos.c \
+			$(SRC_DIR)parse/parse_map_refraction.c \
 
 # Concatenate all source files
 SRCS 			= $(CUB3D) $(INIT) $(RAYCASTER) $(MOVEMENT) $(RENDERING) $(PARSE)

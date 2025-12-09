@@ -15,7 +15,6 @@
 # define TEXTURESIZE 64
 # define MINIMAPSIZE 10
 
-// Parsing structures
 typedef struct s_data
 {
 	char	**map;
@@ -31,6 +30,15 @@ typedef struct s_data
 	int		player_x;
 	int		player_y;
 }			t_data;
+
+typedef struct s_color_ctx
+{
+	char	*path;
+	int		*rgb;
+	int		*hdr_count;
+	int		*flag;
+	char	type;
+}	t_color_ctx;
 
 typedef struct s_pmctx
 {
@@ -224,12 +232,9 @@ void			free_world_map(t_map *map);
 // Parsing functions
 int				verify_map(const char *path, t_data *game);
 char			**parse_map(char *file, t_data *game);
-int				validate_map(t_data *game);
 int				check_n_set_header(char *line, t_data *g, int *hdr_count);
 int				parse_rgb(char *line, int rgb[3]);
 int				is_blank(const char *s);
-int				check_if_valid(const char *s);
-int				has_cub_extension(const char *map);
 void			rstrip_nl(char *s);
 void			ft_free_split(char **arr);
 int				map_check(char **map, int *player,
@@ -240,6 +245,16 @@ int				ensure_cap(char ***map, int *cap, int need);
 int				push_map_line(char ***map, int *count, int *cap, char *line);
 void			apply_parsed_to_map(t_map *m, t_data *g);
 void			get_map_size(char **map, int *height, int *width);
+char			*skip_ws(char *s);
+
+// Validation functions
+int				validate_map(t_data *game);
+int				check_if_valid(const char *s);
+int				has_cub_extension(const char *map);
+int				handle_duplicate_color(int *flag, char type);
+int				handle_empty_color(char *trimmed, char type);
+int				handle_invalid_color(int rgb[3], char *trimmed, char type);
+int				process_color_value(char *path, int rgb[3], char type);
 
 // Image extraction
 int				extract_images(t_map *map, t_window *w);
