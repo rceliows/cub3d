@@ -15,6 +15,8 @@ A 3D raycasting game engine inspired by Wolfenstein 3D, built with MinilibX and 
 - [Map Format](#map-format)
 - [Controls](#controls)
 - [Bonus Features](#bonus-features)
+- [Error Handling](#error-handling)
+- [Known Issues](#known-issues)
 - [Project Structure](#project-structure)
 
 ## Description
@@ -88,6 +90,13 @@ Run the game with a map file:
 ./cub3d maps/good/subject_map.cub
 ```
 
+### Exit Codes
+
+The program returns different exit codes based on the type of error:
+- **0**: Success (normal execution)
+- **1**: Configuration errors (invalid map format, missing textures, validation failures)
+- **2**: File access errors (map file not found, texture files not readable, permission denied)
+
 ### Available Maps
 
 **Good Maps** (Valid configurations):
@@ -143,6 +152,7 @@ C 225,30,0     # Ceiling color (RGB)
 3. All textures must be valid .xpm files
 4. RGB values must be between 0-255
 5. No gaps in the map boundaries
+6. No duplicate texture or color definitions
 
 ## Controls
 
@@ -197,6 +207,52 @@ C 225,30,0     # Ceiling color (RGB)
 - Toggle mouse lock with `Q` key
 - Centered cursor for smooth looking
 
+## Error Handling
+
+The program provides detailed error messages for various validation failures:
+
+### Map File Errors
+- `Error: file must have .cub extension` - Map file doesn't end with .cub
+- `Error: No such file or directory` - Map file not found
+- `Error: Permission denied` - Cannot read map file
+
+### Header Errors
+- `Error: missing NO/SO/WE/EA texture` - Texture definition not found
+- `Error: duplicate NO/SO/WE/EA texture` - Texture defined multiple times
+- `Error: NO/SO/WE/EA texture must be .xpm file` - Wrong file extension
+- `Error: NO/SO/WE/EA texture: No such file or directory` - Texture file not found
+- `Error: missing floor/ceiling color` - Color definition not found
+- `Error: duplicate floor/ceiling color` - Color defined multiple times
+- `Error: floor/ceiling color has no value` - Empty color definition
+- `Error: invalid floor/ceiling color format` - Wrong RGB format or values out of range (0-255)
+
+### Map Errors
+- `Error: invalid character in map` - Map contains invalid characters
+- `Error: empty line in middle of map` - Blank line found within map boundaries
+- `Error: no player found` - No starting position (N/S/E/W) in map
+- `Error: multiple player found` - More than one starting position
+- `Error: fails map check` - Map not properly enclosed by walls
+
+## Known Issues
+
+### Memory Leaks from MinilibX
+
+Due to the use of `mlx_mouse_hide()` function from MinilibX, there are unavoidable memory leaks reported by Valgrind. These leaks originate from X11/Xcursor libraries used internally by MinilibX and are beyond the scope of this project to fix.
+
+**Example Valgrind output:**
+```
+==44079== HEAP SUMMARY:
+==44079==     in use at exit: 31,567 bytes in 400 blocks
+==44079==   total heap usage: 3,062 allocs, 2,662 frees, 1,137,732 bytes allocated
+```
+
+These leaks are:
+- **Not caused by the cub3D codebase** - They originate from MinilibX's interaction with X11
+- **System library related** - Specifically from `libX11.so` and `libXcursor.so`
+- **Unavoidable when using mouse functions** - There is no MinilibX function to properly clean up these allocations
+
+**Note:** All memory allocated by the cub3D program itself is properly freed. The remaining "still reachable" blocks are internal to the graphics libraries and are automatically cleaned up by the operating system when the program exits.
+
 ## Project Structure
 
 ```
@@ -221,7 +277,7 @@ cub3d/
 ### Key Components
 
 - **Raycasting Engine** - Core 3D rendering using DDA algorithm
-- **Map Parser** - Validates and loads .cub files
+- **Map Parser** - Validates and loads .cub files with comprehensive error checking
 - **Sprite System** - Billboard-based sprite rendering with sorting
 - **Door Manager** - State management for interactive doors
 - **Input Handler** - Keyboard and mouse event processing
@@ -236,6 +292,9 @@ Movement and rotation speeds are multiplied by frame time to ensure consistent b
 
 ### Texture Mapping
 Walls use proper texture coordinate calculation to avoid distortion and support different texture sizes.
+
+### Error Recovery
+The parser implements early-exit validation, stopping at the first error encountered and providing specific error messages to aid debugging.
 
 ## Credits
 
