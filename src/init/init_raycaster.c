@@ -2,22 +2,22 @@
 
 void	setup_direction(t_raycaster *r, int direction)
 {
-	if (direction == 'N')
+	if (direction == 'W')
 	{
 		r->dir_x = 0;
 		r->dir_y = -1;
 	}
-	else if (direction == 'S')
+	else if (direction == 'E')
 	{
 		r->dir_x = 0;
 		r->dir_y = 1;
 	}
-	else if (direction == 'E')
+	else if (direction == 'S')
 	{
 		r->dir_x = 1;
 		r->dir_y = 0;
 	}
-	else if (direction == 'W')
+	else if (direction == 'N')
 	{
 		r->dir_x = -1;
 		r->dir_y = 0;

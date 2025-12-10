@@ -2,19 +2,19 @@
 
 int	extract_images(t_map *map, t_window *w)
 {
-	map->texture[0] = mlx_xpm_file_to_image(w->mlx, map->n_xpm_path,
+	map->texture[0] = mlx_xpm_file_to_image(w->mlx, map->e_xpm_path,
 			&map->texture_width[0], &map->texture_height[0]);
 	if (!map->texture[0])
 		return (0);
-	map->texture[1] = mlx_xpm_file_to_image(w->mlx, map->s_xpm_path,
+	map->texture[1] = mlx_xpm_file_to_image(w->mlx, map->w_xpm_path,
 			&map->texture_width[1], &map->texture_height[1]);
 	if (!map->texture[1])
 		return (0);
-	map->texture[3] = mlx_xpm_file_to_image(w->mlx, map->e_xpm_path,
+	map->texture[3] = mlx_xpm_file_to_image(w->mlx, map->s_xpm_path,
 			&map->texture_width[3], &map->texture_height[3]);
 	if (!map->texture[3])
 		return (0);
-	map->texture[2] = mlx_xpm_file_to_image(w->mlx, map->w_xpm_path,
+	map->texture[2] = mlx_xpm_file_to_image(w->mlx, map->n_xpm_path,
 			&map->texture_width[2], &map->texture_height[2]);
 	if (!map->texture[2])
 		return (0);
